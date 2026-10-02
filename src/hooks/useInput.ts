@@ -1,11 +1,5 @@
 import { useState, ChangeEvent } from "react";
-
-export function useInput(initialValue: string = "") {
-  const [value, setValue] = useState(initialValue);
-
-  const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    setValue(e.target.value);
-  };
-
-  return [value, handleChange, setValue] as const;
+export default function useInput(initial = ""): [string, (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void, (v: string) => void] {
+  const [value, setValue] = useState(initial);
+  return [value, (e) => setValue(e.target.value), setValue];
 }

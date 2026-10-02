@@ -1,76 +1,18 @@
 "use client";
-
-import { FormEvent, useState } from "react";
-import { useAppDispatch } from "@/hooks/redux";
-import { changePost } from "../states/action";
+import { useState } from "react";
+import { changePost } from "../api/postApi";
 import { showErrorDialog, showSuccessDialog } from "@/helpers/toolsHelper";
-import { Modal } from "./AddModal";
-import type { Post } from "@/types";
-
-export default function ChangeModal({
-  post,
-  onClose,
-}: {
-  post: Post;
-  onClose: () => void;
-}) {
-  const dispatch = useAppDispatch();
-  const [text, setText] = useState(post.description);
-  const [loading, setLoading] = useState(false);
-
-  const submit = async (e: FormEvent) => {
-    e.preventDefault();
-
-    if (text.trim().length < 3) {
-      showErrorDialog("Isi postingan minimal 3 karakter.");
-      return;
-    }
-
-    setLoading(true);
-
-    const result = await dispatch(
-      changePost({ id: post.id, description: text.trim() })
-    );
-
-    if (changePost.fulfilled.match(result)) {
-      await showSuccessDialog("Postingan berhasil diperbarui.");
-      onClose();
-    } else {
-      showErrorDialog(result.error.message || "Gagal memperbarui postingan");
-    }
-
-    setLoading(false);
-  };
-
+export default function ChangeModal({ id, initial, onClose, onDone }: { id: string; initial: string; onClose: () => void; onDone: () => void }) {
+  const [text, setText] = useState(initial);
+  const submit = async (e: React.FormEvent) => { e.preventDefault();
+    try { await changePost(id, text); await showSuccessDialog("Postingan diperbarui"); onDone(); onClose(); } catch (err) { showErrorDialog((err as Error).message); } };
   return (
-    <Modal title="Ubah postingan" onClose={onClose}>
-      <form onSubmit={submit}>
-        <textarea
-          required
-          autoFocus
-          value={text}
-          onChange={(e) => setText(e.target.value)}
-          rows={6}
-          placeholder="Tuliskan perubahan postingan..."
-          className="w-full resize-none rounded-2xl border border-slate-200 p-4 text-sm outline-none focus:border-slate-500"
-        />
-
-        <div className="mt-4 flex justify-end gap-2">
-          <button
-            type="button"
-            onClick={onClose}
-            className="rounded-xl px-4 py-2.5 font-semibold text-slate-600 hover:bg-slate-100"
-          >
-            Batal
-          </button>
-          <button
-            disabled={loading}
-            className="rounded-xl bg-slate-950 px-5 py-2.5 font-semibold text-white hover:bg-slate-800 disabled:opacity-50"
-          >
-            {loading ? "Menyimpan…" : "Simpan"}
-          </button>
-        </div>
+    <div className="fixed inset-0 z-50 grid place-items-center bg-black/40 p-4" onClick={onClose}>
+      <form onClick={(e) => e.stopPropagation()} onSubmit={submit} className="card w-full max-w-lg space-y-4 p-6">
+        <h2 className="text-lg font-extrabold">Ubah postingan</h2>
+        <textarea className="input min-h-32" value={text} onChange={(e) => setText(e.target.value)} required />
+        <div className="flex justify-end gap-2"><button type="button" className="btn btn-ghost" onClick={onClose}>Batal</button><button className="btn btn-primary">Simpan</button></div>
       </form>
-    </Modal>
+    </div>
   );
 }

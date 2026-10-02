@@ -1,65 +1,12 @@
-import { fetchWithAuth } from "@/helpers/apiHelper";
-
-export const getPostsApi = async (isMe: boolean = false) => {
-  const endpoint = isMe ? "/posts?is_me=1" : "/posts";
-  return fetchWithAuth(endpoint, { method: "GET" });
-};
-
-export const getPostApi = async (id: string) => {
-  return fetchWithAuth(`/posts/${id}`, { method: "GET" });
-};
-
-export const addPostApi = async (cover: File, description: string) => {
-  const formData = new FormData();
-  formData.append("cover", cover);
-  formData.append("description", description);
-
-  return fetchWithAuth("/posts", {
-    method: "POST",
-    body: formData,
-  });
-};
-
-export const changePostApi = async (id: string, description: string) => {
-  return fetchWithAuth(`/posts/${id}`, {
-    method: "PUT",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ description }),
-  });
-};
-
-export const uploadPostCoverApi = async (id: string, cover: File) => {
-  const formData = new FormData();
-  formData.append("cover", cover);
-
-  return fetchWithAuth(`/posts/${id}/cover`, {
-    method: "POST",
-    body: formData,
-  });
-};
-
-export const deletePostApi = async (id: string) => {
-  return fetchWithAuth(`/posts/${id}`, { method: "DELETE" });
-};
-
-export const likePostApi = async (id: string) => {
-  return fetchWithAuth(`/posts/${id}/likes`, { method: "POST" });
-};
-
-export const addCommentApi = async (id: string, comment: string) => {
-  return fetchWithAuth(`/posts/${id}/comments`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ comment }),
-  });
-};
-
-export const deleteCommentApi = async (postId: string, commentId: string) => {
-  return fetchWithAuth(`/posts/${postId}/comments/${commentId}`, {
-    method: "DELETE",
-  });
-};
-
-export const deleteAllPostsApi = async () => {
-  return fetchWithAuth("/posts", { method: "DELETE" });
-};
+import { api } from "@/helpers/apiHelper";
+import type { Post } from "@/types";
+export const getPosts = (isMe = false) => api<{ posts: Post[] }>("/posts", { query: { is_me: isMe ? 1 : undefined } });
+export const getPost = (id: string) => api<{ post: Post }>(`/posts/${id}`);
+export const addPost = (description: string) => api("/posts", { method: "POST", body: { description } });
+export const changePost = (id: string, description: string) => api(`/posts/${id}`, { method: "PUT", body: { description } });
+export const changeCover = (id: string, file: File) => { const f = new FormData(); f.append("cover", file); return api(`/posts/${id}/cover`, { method: "POST", body: f }); };
+export const deletePost = (id: string) => api(`/posts/${id}`, { method: "DELETE" });
+export const toggleLike = (id: string) => api(`/posts/${id}/likes`, { method: "POST" });
+export const addComment = (id: string, comment: string) => api(`/posts/${id}/comments`, { method: "POST", body: { comment } });
+export const deleteComment = (id: string, comment_id: string) => api(`/posts/${id}/comments`, { method: "DELETE", body: { comment_id } });
+export const deleteAllPosts = () => api("/posts", { method: "DELETE" });

@@ -1,4 +1,6 @@
-import {createAsyncThunk,createSlice} from "@reduxjs/toolkit"; import {getMeApi,getUsersApi,updateProfileApi} from "../api/userApi"; import type {User} from "@/types";
-interface State{users:User[];profile:User|null;status:"idle"|"loading"|"failed";isChangeProfile:boolean;error:string|null} const initialState:State={users:[],profile:null,status:"idle",isChangeProfile:false,error:null};
-export const fetchUsers=createAsyncThunk("users/fetch",getUsersApi); export const fetchProfile=createAsyncThunk("users/profile",getMeApi); export const changeProfile=createAsyncThunk("users/changeProfile",updateProfileApi);
-const slice=createSlice({name:"users",initialState,reducers:{},extraReducers:b=>{b.addCase(fetchUsers.pending,s=>{s.status="loading"}).addCase(fetchUsers.fulfilled,(s,a)=>{s.status="idle";s.users=a.payload||[]}).addCase(fetchUsers.rejected,(s,a)=>{s.status="failed";s.error=a.error.message||"Gagal memuat pengguna"}).addCase(fetchProfile.fulfilled,(s,a)=>{s.profile=a.payload}).addCase(changeProfile.pending,s=>{s.isChangeProfile=true}).addCase(changeProfile.fulfilled,(s,a)=>{s.isChangeProfile=false;s.profile=a.payload}).addCase(changeProfile.rejected,(s,a)=>{s.isChangeProfile=false;s.error=a.error.message||"Gagal memperbarui profil"})}}); export default slice.reducer;
+import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import { getUsers } from "../api/userApi";
+import type { User } from "@/types";
+export const asyncLoadUsers = createAsyncThunk("users/load", (search?: string) => getUsers(search).then((d) => d.users));
+export default createSlice({ name: "users", initialState: { users: [] as User[] }, reducers: {},
+  extraReducers: (b) => { b.addCase(asyncLoadUsers.fulfilled, (s, a) => { s.users = a.payload; }); } }).reducer;

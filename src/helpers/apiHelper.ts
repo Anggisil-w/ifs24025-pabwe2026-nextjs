@@ -1,38 +1,19 @@
 import { DELCOM_BASEURL } from "@/lib/config";
-
-export const getAccessToken = (): string | null => {
-  if (typeof window !== "undefined") {
-    return localStorage.getItem("accessToken");
-  }
-  return null;
-};
-
-export const putAccessToken = (token: string): void => {
-  if (typeof window !== "undefined") {
-    localStorage.setItem("accessToken", token);
-  }
-};
-
-export const removeAccessToken = (): void => {
-  if (typeof window !== "undefined") {
-    localStorage.removeItem("accessToken");
-  }
-};
-
-export const fetchWithAuth = async (endpoint: string, options: RequestInit = {}) => {
-  const token = getAccessToken();
-  const headers = {
-    ...options.headers,
-    ...(token ? { Authorization: `Bearer ${token}` } : {}),
-  };
-
-  const response = await fetch(`${DELCOM_BASEURL}${endpoint}`, {
-    ...options,
-    headers,
-  });
-
-  return response.json();
-};
-
-// Tambahkan ekspor apiFetch sebagai alias dari fetchWithAuth
-export const apiFetch = fetchWithAuth;
+export const getAccessToken = () => (typeof window === "undefined" ? null : localStorage.getItem("token"));
+export const putAccessToken = (t: string) => localStorage.setItem("token", t);
+export const removeAccessToken = () => localStorage.removeItem("token");
+type Opt = { method?: string; body?: unknown; query?: Record<string, string | number | undefined>; auth?: boolean };
+export async function api<T = any>(path: string, { method = "GET", body, query, auth = true }: Opt = {}): Promise<T> {
+  const url = new URL(DELCOM_BASEURL + path);
+  Object.entries(query || {}).forEach(([k, v]) => v !== undefined && url.searchParams.set(k, String(v)));
+  const headers: Record<string, string> = {};
+  const t = getAccessToken();
+  if (auth && t) headers.Authorization = `Bearer ${t}`;
+  let b: BodyInit | undefined;
+  if (body instanceof FormData) b = body;
+  else if (body) { headers["Content-Type"] = "application/json"; b = JSON.stringify(body); }
+  const res = await fetch(url, { method, headers, body: b });
+  const json = await res.json();
+  if (!json.success) throw new Error(json.message || "Terjadi kesalahan");
+  return json.data as T;
+}

@@ -1,6 +1,14 @@
-import {createAsyncThunk,createSlice} from "@reduxjs/toolkit"; import {loginApi,registerApi} from "../api/authApi"; import {putAccessToken,removeAccessToken} from "@/helpers/apiHelper"; import type {User} from "@/types";
-interface State{user:User|null;token:string|null;isAuthLogin:boolean;isAuthRegister:boolean;error:string|null} const initialState:State={user:null,token:null,isAuthLogin:false,isAuthRegister:false,error:null};
-export const isAuthLogin=createAsyncThunk("auth/login",async(p:{email:string;password:string})=>{const r=await loginApi(p.email,p.password); const token=r?.token||r?.access_token||r?.data?.token; if(!token) throw new Error("Token login tidak ditemukan dari server."); putAccessToken(token); return {token,user:r?.user||r?.data?.user||null};});
-export const isAuthRegister=createAsyncThunk("auth/register",async(p:{name:string;email:string;password:string})=>registerApi(p.name,p.email,p.password));
-const slice=createSlice({name:"auth",initialState,reducers:{isAuthLogout(s){removeAccessToken();s.user=null;s.token=null}},extraReducers:b=>{b.addCase(isAuthLogin.pending,s=>{s.isAuthLogin=true;s.error=null}).addCase(isAuthLogin.fulfilled,(s,a)=>{s.isAuthLogin=false;s.token=a.payload.token;s.user=a.payload.user}).addCase(isAuthLogin.rejected,(s,a)=>{s.isAuthLogin=false;s.error=a.error.message||"Login gagal"}).addCase(isAuthRegister.pending,s=>{s.isAuthRegister=true;s.error=null}).addCase(isAuthRegister.fulfilled,s=>{s.isAuthRegister=false}).addCase(isAuthRegister.rejected,(s,a)=>{s.isAuthRegister=false;s.error=a.error.message||"Registrasi gagal"})}});
-export const {isAuthLogout}=slice.actions; export default slice.reducer;
+import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import { api, getAccessToken, removeAccessToken } from "@/helpers/apiHelper";
+import type { User } from "@/types";
+export const asyncLoadProfile = createAsyncThunk("auth/profile", async () => {
+  if (!getAccessToken()) return null;
+  try { return (await api<{ user: User }>("/users/me")).user; } catch { removeAccessToken(); return null; }
+});
+const slice = createSlice({
+  name: "auth", initialState: { profile: null as User | null, isProfile: false },
+  reducers: { isAuthLogout: (s) => { removeAccessToken(); s.profile = null; } },
+  extraReducers: (b) => { b.addCase(asyncLoadProfile.fulfilled, (s, a) => { s.profile = a.payload; s.isProfile = true; }); },
+});
+export const { isAuthLogout } = slice.actions;
+export default slice.reducer;

@@ -1,2 +1,28 @@
-"use client"; import {FormEvent,useEffect,useState} from "react"; import {useAppDispatch,useAppSelector} from "@/hooks/redux"; import {changeProfile,fetchProfile} from "../states/reducer"; import {showErrorDialog,showSuccessDialog} from "@/helpers/toolsHelper";
-export default function ProfilePage(){const d=useAppDispatch(),p=useAppSelector(s=>s.users.profile);const [name,setName]=useState(""),[bio,setBio]=useState("");useEffect(()=>{d(fetchProfile())},[d]);useEffect(()=>{if(p){setName(p.name||"");setBio(p.bio||"")}},[p]);const submit=async(e:FormEvent)=>{e.preventDefault();const x=await d(changeProfile({name,bio}));if(changeProfile.fulfilled.match(x))showSuccessDialog("Profil berhasil diperbarui.");else showErrorDialog(x.error.message||"Gagal memperbarui profil")};return <div className="mx-auto max-w-3xl"><div className="mb-8"><p className="text-sm font-semibold text-slate-500">ACCOUNT</p><h1 className="mt-1 text-3xl font-bold">Profil Saya</h1><p className="mt-2 text-slate-500">Kelola informasi yang tampil pada akun Anda.</p></div><form onSubmit={submit} className="rounded-3xl border border-slate-200 bg-white p-6 sm:p-8"><div className="mb-7 flex items-center gap-4">{p?.photo||p?.avatar?<img src={p.photo||p.avatar||""} alt={p.name} className="h-20 w-20 rounded-3xl object-cover"/>:<div className="grid h-20 w-20 place-items-center rounded-3xl bg-slate-100 text-2xl font-bold">{(p?.name||"U").slice(0,1)}</div>}<div><h2 className="text-xl font-bold">{p?.name||"Profil"}</h2><p className="text-sm text-slate-400">{p?.email||""}</p></div></div><label className="block text-sm font-semibold">Nama<input value={name} onChange={e=>setName(e.target.value)} className="mt-2 w-full rounded-xl border border-slate-200 px-4 py-3 font-normal outline-none focus:border-slate-500"/></label><label className="mt-5 block text-sm font-semibold">Bio<textarea rows={5} value={bio} onChange={e=>setBio(e.target.value)} className="mt-2 w-full resize-none rounded-xl border border-slate-200 px-4 py-3 font-normal outline-none focus:border-slate-500"/></label><div className="mt-6 flex justify-end"><button className="rounded-xl bg-slate-950 px-5 py-3 font-semibold text-white">Simpan perubahan</button></div></form></div>}
+"use client";
+import { useAppDispatch, useAppSelector } from "@/hooks/redux";
+import useInput from "@/hooks/useInput";
+import { asyncLoadProfile } from "@/features/auth/states/reducer";
+import { changePassword, updateMe, uploadPhoto } from "../api/userApi";
+import { showErrorDialog, showSuccessDialog } from "@/helpers/toolsHelper";
+export default function ProfilePage() {
+  const dispatch = useAppDispatch(); const me = useAppSelector((s) => s.auth.profile);
+  const [name, onName] = useInput(me?.name || ""); const [email, onEmail] = useInput(me?.email || "");
+  const [pass, onPass, setPass] = useInput(); const [npass, onNpass, setNpass] = useInput();
+  const run = async (fn: () => Promise<unknown>, msg: string) => { try { await fn(); await dispatch(asyncLoadProfile()); showSuccessDialog(msg); } catch (e) { showErrorDialog((e as Error).message); } };
+  if (!me) return null;
+  return (
+    <div className="mx-auto max-w-2xl space-y-6">
+      <h1 className="text-2xl font-extrabold">Profil Saya</h1>
+      <div className="card flex items-center gap-5 p-6">
+        <img src={me.photo || `https://ui-avatars.com/api/?background=6366f1&color=fff&size=128&name=${encodeURIComponent(me.name)}`} alt="" className="size-20 rounded-full object-cover" />
+        <label className="btn btn-ghost cursor-pointer">Ganti foto<input type="file" accept="image/*" hidden onChange={(e) => e.target.files?.[0] && run(() => uploadPhoto(e.target.files![0]), "Foto diperbarui")} /></label>
+      </div>
+      <form className="card space-y-3 p-6" onSubmit={(e) => { e.preventDefault(); run(() => updateMe(name, email), "Profil diperbarui"); }}>
+        <h2 className="font-bold">Data diri</h2><input className="input" value={name} onChange={onName} /><input className="input" type="email" value={email} onChange={onEmail} /><button className="btn btn-primary">Simpan</button>
+      </form>
+      <form className="card space-y-3 p-6" onSubmit={(e) => { e.preventDefault(); run(async () => { await changePassword(pass, npass); setPass(""); setNpass(""); }, "Kata sandi diubah"); }}>
+        <h2 className="font-bold">Ubah kata sandi</h2><input className="input" type="password" placeholder="Kata sandi lama" value={pass} onChange={onPass} /><input className="input" type="password" placeholder="Kata sandi baru" value={npass} onChange={onNpass} /><button className="btn btn-primary">Ubah</button>
+      </form>
+    </div>
+  );
+}

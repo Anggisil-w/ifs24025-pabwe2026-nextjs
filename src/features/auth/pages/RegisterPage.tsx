@@ -1,3 +1,28 @@
-"use client"; import {FormEvent,useState} from "react"; import {useRouter} from "next/navigation"; import Link from "next/link"; import {useAppDispatch,useAppSelector} from "@/hooks/redux"; import {isAuthRegister} from "../states/reducer"; import {showErrorDialog,showSuccessDialog} from "@/helpers/toolsHelper"; import {AuthShell} from "./LoginPage";
-export default function RegisterPage(){const r=useRouter(),d=useAppDispatch(),loading=useAppSelector(s=>s.auth.isAuthRegister);const [name,setName]=useState(""),[email,setEmail]=useState(""),[password,setPassword]=useState("");const submit=async(e:FormEvent)=>{e.preventDefault();if(name.trim().length<3||!email||password.length<6){showErrorDialog("Nama minimal 3 karakter, email wajib valid, dan password minimal 6 karakter.");return}const x=await d(isAuthRegister({name,email,password}));if(isAuthRegister.fulfilled.match(x)){await showSuccessDialog("Registrasi berhasil. Silakan login.");r.replace("/auth/login")}else showErrorDialog(x.error.message||"Registrasi gagal")};return <AuthShell title="Buat akun baru" subtitle="Mulai berbagi ide bersama komunitas."><form onSubmit={submit} className="space-y-4"><Field label="Nama" value={name} set={setName} placeholder="Nama lengkap"/><Field label="Email" value={email} set={setEmail} type="email" placeholder="nama@email.com"/><Field label="Password" value={password} set={setPassword} type="password" placeholder="Minimal 6 karakter"/><button disabled={loading} className="mt-2 w-full rounded-2xl bg-slate-950 py-3.5 font-semibold text-white disabled:opacity-50">{loading?"Membuat akun…":"Daftar"}</button><p className="text-center text-sm text-slate-500">Sudah punya akun? <Link className="font-semibold text-slate-950 underline" href="/auth/login">Masuk</Link></p></form></AuthShell>}
-function Field(p:any){return <label className="block text-sm font-medium text-slate-700">{p.label}<input required value={p.value} onChange={e=>p.set(e.target.value)} type={p.type||"text"} placeholder={p.placeholder} className="mt-2 w-full rounded-xl border border-slate-200 px-4 py-3 outline-none focus:border-slate-500"/></label>}
+"use client";
+import { useState } from "react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import useInput from "@/hooks/useInput";
+import { register } from "../api/authApi";
+import { showErrorDialog, showSuccessDialog, showWarningDialog } from "@/helpers/toolsHelper";
+export default function RegisterPage() {
+  const router = useRouter();
+  const [name, onName] = useInput(); const [email, onEmail] = useInput(); const [password, onPass] = useInput(); const [busy, setBusy] = useState(false);
+  const submit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (password.length < 6) return void showWarningDialog("Kata sandi minimal 6 karakter");
+    setBusy(true);
+    try { await register(name, email, password); await showSuccessDialog("Akun dibuat, silakan masuk"); router.replace("/auth/login"); }
+    catch (err) { showErrorDialog((err as Error).message); } finally { setBusy(false); }
+  };
+  return (
+    <form onSubmit={submit} className="card space-y-4 p-8">
+      <h2 className="text-2xl font-extrabold">Buat akun baru</h2><p className="text-sm text-slate-500">Hanya butuh semenit</p>
+      <input className="input" placeholder="Nama lengkap" value={name} onChange={onName} required />
+      <input className="input" type="email" placeholder="Email" value={email} onChange={onEmail} required />
+      <input className="input" type="password" placeholder="Kata sandi" value={password} onChange={onPass} required />
+      <button className="btn btn-primary w-full" disabled={busy}>{busy ? "Memproses..." : "Daftar"}</button>
+      <p className="text-center text-sm text-slate-500">Sudah punya akun? <Link className="font-semibold text-indigo-600" href="/auth/login">Masuk</Link></p>
+    </form>
+  );
+}

@@ -1,2 +1,23 @@
-"use client"; import {useEffect,useState} from "react"; import {useRouter} from "next/navigation"; import NavbarComponent from "../components/NavbarComponent"; import SidebarComponent from "../components/SidebarComponent"; import {getAccessToken} from "@/helpers/apiHelper"; import {useAppDispatch} from "@/hooks/redux"; import {fetchProfile} from "@/features/users/states/reducer";
-export default function PostLayout({children}:{children:React.ReactNode}){const [open,setOpen]=useState(false);const r=useRouter(),d=useAppDispatch();useEffect(()=>{if(!getAccessToken()){r.replace("/auth/login");return}d(fetchProfile())},[d,r]);return <div className="min-h-screen bg-[#f6f7fb]"><NavbarComponent onMenu={()=>setOpen(true)}/><div className="mx-auto flex max-w-[1600px]"><SidebarComponent open={open} onClose={()=>setOpen(false)}/><main className="min-w-0 flex-1 p-4 sm:p-7 lg:p-9">{children}</main></div></div>}
+"use client";
+import { Suspense, useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { useAppDispatch, useAppSelector } from "@/hooks/redux";
+import { getAccessToken } from "@/helpers/apiHelper";
+import { asyncLoadProfile, isAuthLogout } from "@/features/auth/states/reducer";
+import { showConfirmDialog } from "@/helpers/toolsHelper";
+import NavbarComponent from "../components/NavbarComponent";
+import SidebarComponent from "../components/SidebarComponent";
+export default function PostLayout({ children }: { children: React.ReactNode }) {
+  const router = useRouter(); const dispatch = useAppDispatch(); const { profile, isProfile } = useAppSelector((s) => s.auth); const [open, setOpen] = useState(false);
+  useEffect(() => { if (!getAccessToken()) router.replace("/auth/login"); else dispatch(asyncLoadProfile()); }, [dispatch, router]);
+  useEffect(() => { if (isProfile && !profile) router.replace("/auth/login"); }, [isProfile, profile, router]);
+  const logout = async () => { if (await showConfirmDialog("Keluar dari akun?")) { dispatch(isAuthLogout()); router.replace("/auth/login"); } };
+  if (!profile) return <div className="grid min-h-screen place-items-center text-slate-400">Memuat...</div>;
+  return (
+    <div className="min-h-screen">
+      <NavbarComponent onMenu={() => setOpen(true)} onLogout={logout} />
+      <Suspense><SidebarComponent open={open} onClose={() => setOpen(false)} /></Suspense>
+      <main className="p-4 lg:ml-64 lg:p-8">{children}</main>
+    </div>
+  );
+}

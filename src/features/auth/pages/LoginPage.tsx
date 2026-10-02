@@ -1,5 +1,26 @@
 "use client";
-import {FormEvent,useState} from "react"; import {useRouter} from "next/navigation"; import {useAppDispatch,useAppSelector} from "@/hooks/redux"; import {isAuthLogin} from "../states/reducer"; import {showErrorDialog} from "@/helpers/toolsHelper"; import Link from "next/link";
-export default function LoginPage(){const r=useRouter(),d=useAppDispatch(),loading=useAppSelector(s=>s.auth.isAuthLogin);const [email,setEmail]=useState(""),[password,setPassword]=useState("");const submit=async(e:FormEvent)=>{e.preventDefault();if(!email||!password){showErrorDialog("Email dan password wajib diisi.");return}const x=await d(isAuthLogin({email,password}));if(isAuthLogin.fulfilled.match(x))r.replace("/");else showErrorDialog((x.payload as string)||x.error.message||"Login gagal.")};return <AuthShell title="Selamat datang kembali" subtitle="Masuk untuk melanjutkan ke ruang postingan Anda."><form onSubmit={submit} className="space-y-5"><Field label="Email" value={email} set={setEmail} type="email" placeholder="nama@email.com"/><Field label="Password" value={password} set={setPassword} type="password" placeholder="••••••••"/><button disabled={loading} className="w-full rounded-2xl bg-slate-950 py-3.5 font-semibold text-white transition hover:bg-slate-800 disabled:opacity-50">{loading?"Memproses…":"Masuk"}</button><p className="text-center text-sm text-slate-500">Belum punya akun? <Link className="font-semibold text-slate-950 underline" href="/auth/register">Daftar sekarang</Link></p></form></AuthShell>}
-function Field(p:any){return <label className="block text-sm font-medium text-slate-700">{p.label}<input required value={p.value} onChange={e=>p.set(e.target.value)} type={p.type} placeholder={p.placeholder} className="mt-2 w-full rounded-xl border border-slate-200 bg-white px-4 py-3 outline-none ring-0 transition focus:border-slate-500"/></label>}
-export function AuthShell({children,title,subtitle}:{children:React.ReactNode;title:string;subtitle:string}){return <main className="min-h-screen bg-[#f5f7fb] px-5 py-10"><div className="mx-auto grid min-h-[calc(100vh-5rem)] max-w-5xl overflow-hidden rounded-[2rem] bg-white shadow-xl shadow-slate-200/60 md:grid-cols-2"><section className="hidden bg-slate-950 p-12 text-white md:flex md:flex-col md:justify-between"><div><div className="mb-10 flex items-center gap-3"><div className="grid h-11 w-11 place-items-center rounded-2xl bg-white text-slate-950 font-black">D</div><span className="text-xl font-bold">Delcom Post</span></div><h2 className="text-5xl font-bold leading-tight">Share ideas.<br/>Build connections.</h2><p className="mt-6 max-w-sm text-slate-300">Platform sederhana untuk membuat, membaca, dan berdiskusi melalui postingan.</p></div><p className="text-sm text-slate-400">PABWE 2026 • Next.js + TypeScript</p></section><section className="flex items-center p-7 sm:p-12"><div className="w-full max-w-md mx-auto"><div className="mb-8"><p className="mb-2 text-sm font-semibold text-slate-500">DELCOM POST</p><h1 className="text-3xl font-bold text-slate-950">{title}</h1><p className="mt-2 text-slate-500">{subtitle}</p></div>{children}</div></section></div></main>}
+import { useState } from "react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import useInput from "@/hooks/useInput";
+import { login } from "../api/authApi";
+import { putAccessToken } from "@/helpers/apiHelper";
+import { showErrorDialog } from "@/helpers/toolsHelper";
+export default function LoginPage() {
+  const router = useRouter();
+  const [email, onEmail] = useInput(); const [password, onPass] = useInput(); const [busy, setBusy] = useState(false);
+  const submit = async (e: React.FormEvent) => {
+    e.preventDefault(); setBusy(true);
+    try { putAccessToken((await login(email, password)).token); router.replace("/"); }
+    catch (err) { showErrorDialog((err as Error).message); } finally { setBusy(false); }
+  };
+  return (
+    <form onSubmit={submit} className="card space-y-4 p-8">
+      <h2 className="text-2xl font-extrabold">Selamat datang 👋</h2><p className="text-sm text-slate-500">Masuk untuk melanjutkan</p>
+      <input className="input" type="email" placeholder="Email" value={email} onChange={onEmail} required />
+      <input className="input" type="password" placeholder="Kata sandi" value={password} onChange={onPass} required />
+      <button className="btn btn-primary w-full" disabled={busy}>{busy ? "Memproses..." : "Masuk"}</button>
+      <p className="text-center text-sm text-slate-500">Belum punya akun? <Link className="font-semibold text-indigo-600" href="/auth/register">Daftar</Link></p>
+    </form>
+  );
+}

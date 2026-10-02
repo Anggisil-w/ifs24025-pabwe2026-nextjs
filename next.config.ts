@@ -1,3 +1,3 @@
 import type { NextConfig } from "next";
-const nextConfig: NextConfig = { turbopack: { root: process.cwd() } };
+const nextConfig: NextConfig = { reactStrictMode: true, images: { unoptimized: true }, compress: true };
 export default nextConfig;
