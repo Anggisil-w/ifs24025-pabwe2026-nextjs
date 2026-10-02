@@ -1,22 +1,15 @@
 import { fetchWithAuth } from "@/helpers/apiHelper";
 
-// 1. Mengambil daftar postingan (dukungan filter is_me)
-export const getPosts = async (isMe: boolean = false) => {
+export const getPostsApi = async (isMe: boolean = false) => {
   const endpoint = isMe ? "/posts?is_me=1" : "/posts";
-  return fetchWithAuth(endpoint, {
-    method: "GET",
-  });
+  return fetchWithAuth(endpoint, { method: "GET" });
 };
 
-// 2. Mengambil rincian detail postingan berdasarkan ID
-export const getPostDetail = async (id: string) => {
-  return fetchWithAuth(`/posts/${id}`, {
-    method: "GET",
-  });
+export const getPostApi = async (id: string) => {
+  return fetchWithAuth(`/posts/${id}`, { method: "GET" });
 };
 
-// 3. Menambahkan postingan baru (dengan berkas cover dan deskripsi)
-export const addPost = async (cover: File, description: string) => {
+export const addPostApi = async (cover: File, description: string) => {
   const formData = new FormData();
   formData.append("cover", cover);
   formData.append("description", description);
@@ -27,19 +20,15 @@ export const addPost = async (cover: File, description: string) => {
   });
 };
 
-// 4. Memperbarui deskripsi postingan
-export const updatePost = async (id: string, description: string) => {
+export const changePostApi = async (id: string, description: string) => {
   return fetchWithAuth(`/posts/${id}`, {
     method: "PUT",
-    headers: {
-      "Content-Type": "application/json",
-    },
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ description }),
   });
 };
 
-// 5. Mengunggah / mengganti foto cover postingan
-export const updatePostCover = async (id: string, cover: File) => {
+export const uploadPostCoverApi = async (id: string, cover: File) => {
   const formData = new FormData();
   formData.append("cover", cover);
 
@@ -49,41 +38,28 @@ export const updatePostCover = async (id: string, cover: File) => {
   });
 };
 
-// 6. Menghapus postingan tertentu
-export const deletePost = async (id: string) => {
-  return fetchWithAuth(`/posts/${id}`, {
-    method: "DELETE",
-  });
+export const deletePostApi = async (id: string) => {
+  return fetchWithAuth(`/posts/${id}`, { method: "DELETE" });
 };
 
-// 7. Memberikan atau membatalkan suka (Like / Unlike)
-export const toggleLikePost = async (id: string) => {
-  return fetchWithAuth(`/posts/${id}/likes`, {
-    method: "POST",
-  });
+export const likePostApi = async (id: string) => {
+  return fetchWithAuth(`/posts/${id}/likes`, { method: "POST" });
 };
 
-// 8. Menambahkan komentar pada postingan
-export const addComment = async (id: string, comment: string) => {
+export const addCommentApi = async (id: string, comment: string) => {
   return fetchWithAuth(`/posts/${id}/comments`, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ comment }),
   });
 };
 
-// 9. Menghapus komentar pada postingan
-export const deleteComment = async (postId: string, commentId: string) => {
+export const deleteCommentApi = async (postId: string, commentId: string) => {
   return fetchWithAuth(`/posts/${postId}/comments/${commentId}`, {
     method: "DELETE",
   });
 };
 
-// 10. Menghapus seluruh postingan milik pengguna
-export const deleteAllPosts = async () => {
-  return fetchWithAuth("/posts", {
-    method: "DELETE",
-  });
+export const deleteAllPostsApi = async () => {
+  return fetchWithAuth("/posts", { method: "DELETE" });
 };

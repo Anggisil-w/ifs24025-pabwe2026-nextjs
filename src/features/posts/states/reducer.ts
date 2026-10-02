@@ -1,4 +1,55 @@
-import {createAsyncThunk,createSlice} from "@reduxjs/toolkit"; import * as api from "../api/postApi"; import type {Post} from "@/types";
-interface State{posts:Post[];post:Post|null;status:"idle"|"loading"|"failed";mutating:boolean;error:string|null} const initialState:State={posts:[],post:null,status:"idle",mutating:false,error:null};
-export const fetchPosts=createAsyncThunk("posts/fetch",(is_me?:boolean)=>api.getPostsApi(is_me)); export const fetchPost=createAsyncThunk("posts/detail",api.getPostApi); export const addPost=createAsyncThunk("posts/add",api.addPostApi); export const changePost=createAsyncThunk("posts/change",(p:{id:string|number;description:string})=>api.changePostApi(p.id,p.description)); export const deletePost=createAsyncThunk("posts/delete",api.deletePostApi); export const likePost=createAsyncThunk("posts/like",api.likePostApi); export const addComment=createAsyncThunk("posts/comment",(p:{id:string|number;comment:string})=>api.addCommentApi(p.id,p.comment)); export const deleteComment=createAsyncThunk("posts/deleteComment",(p:{id:string|number;commentId:string|number})=>api.deleteCommentApi(p.id,p.commentId)); export const uploadPostCover=createAsyncThunk("posts/cover",(p:{id:string|number;file:File})=>api.uploadPostCoverApi(p.id,p.file)); export const deleteAllPosts=createAsyncThunk("posts/deleteAll",api.deleteAllPostsApi);
-const slice=createSlice({name:"posts",initialState,reducers:{clearPost(s){s.post=null}},extraReducers:b=>{b.addCase(fetchPosts.pending,s=>{s.status="loading"}).addCase(fetchPosts.fulfilled,(s,a)=>{s.status="idle";s.posts=a.payload||[]}).addCase(fetchPosts.rejected,(s,a)=>{s.status="failed";s.error=a.error.message||"Gagal memuat postingan"}).addCase(fetchPost.fulfilled,(s,a)=>{s.post=a.payload}).addMatcher(a=>a.type.startsWith("posts/")&&["pending"].includes(a.type.split("/").pop()||""),(s)=>{s.mutating=true}).addMatcher(a=>a.type.startsWith("posts/")&&["fulfilled","rejected"].includes(a.type.split("/").pop()||""),(s,a)=>{s.mutating=false;if(a.type.endsWith("/rejected"))s.error=a.error?.message||"Aksi gagal"}).addCase(deletePost.fulfilled,(s,a)=>{const id=(a.meta as any).arg;s.posts=s.posts.filter(p=>String(p.id)!==String(id));if(s.post&&String(s.post.id)===String(id))s.post=null}).addCase(likePost.fulfilled,(s,a)=>{s.post=a.payload;s.posts=s.posts.map(p=>String(p.id)===String(a.payload.id)?a.payload:p)}).addCase(addComment.fulfilled,(s,a)=>{if(s.post){s.post.comments=[...(s.post.comments||[]),a.payload]}}).addCase(changePost.fulfilled,(s,a)=>{s.post=a.payload;s.posts=s.posts.map(p=>String(p.id)===String(a.payload.id)?a.payload:p)}).addCase(uploadPostCover.fulfilled,(s,a)=>{s.post=a.payload;s.posts=s.posts.map(p=>String(p.id)===String(a.payload.id)?a.payload:p)})}}); export const {clearPost}=slice.actions; export default slice.reducer;
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { Post } from "@/types";
+import { fetchPosts, fetchPost } from "./action";
+
+export interface PostState {
+  posts: Post[];
+  post: Post | null;
+  loading: boolean;
+  status: "idle" | "loading" | "succeeded" | "failed";
+  error: string | null;
+}
+
+const initialState: PostState = {
+  posts: [],
+  post: null,
+  loading: false,
+  status: "idle",
+  error: null,
+};
+
+const postSlice = createSlice({
+  name: "posts",
+  initialState,
+  reducers: {
+    setPosts: (state, action: PayloadAction<Post[]>) => {
+      state.posts = action.payload;
+    },
+    setPostDetail: (state, action: PayloadAction<Post | null>) => {
+      state.post = action.payload;
+    },
+  },
+  extraReducers: (builder) => {
+    builder
+      .addCase(fetchPosts.pending, (state) => {
+        state.loading = true;
+        state.status = "loading";
+      })
+      .addCase(fetchPosts.fulfilled, (state, action: PayloadAction<Post[]>) => {
+        state.loading = false;
+        state.status = "succeeded";
+        state.posts = action.payload;
+      })
+      .addCase(fetchPosts.rejected, (state, action) => {
+        state.loading = false;
+        state.status = "failed";
+        state.error = action.error.message || "Failed to fetch posts";
+      })
+      .addCase(fetchPost.fulfilled, (state, action: PayloadAction<Post>) => {
+        state.post = action.payload;
+      });
+  },
+});
+
+export const { setPosts, setPostDetail } = postSlice.actions;
+export default postSlice.reducer;

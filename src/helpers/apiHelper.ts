@@ -33,3 +33,6 @@ export const fetchWithAuth = async (endpoint: string, options: RequestInit = {})
 
   return response.json();
 };
+
+// Tambahkan ekspor apiFetch sebagai alias dari fetchWithAuth
+export const apiFetch = fetchWithAuth;

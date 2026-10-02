@@ -1,5 +1,39 @@
-import {apiFetch} from "@/helpers/apiHelper"; import type {User} from "@/types";
-export const getUsersApi=()=>apiFetch<User[]>("users"); export const getMeApi=()=>apiFetch<User>("users/me");
-export const updateProfileApi=(data:{name?:string;bio?:string})=>apiFetch<User>("users/me",{method:"PUT",body:JSON.stringify(data)});
-export const updatePasswordApi=(password:string)=>apiFetch<any>("users/me/password",{method:"PUT",body:JSON.stringify({password})});
-export const uploadProfilePhotoApi=(file:File)=>{const fd=new FormData();fd.append("photo",file);return apiFetch<User>("users/me/photo",{method:"POST",body:fd})};
+import { fetchWithAuth } from "@/helpers/apiHelper";
+
+export const getUsersApi = async (search?: string) => {
+  const query = search ? `?search=${encodeURIComponent(search)}` : "";
+  return fetchWithAuth(`/users${query}`, { method: "GET" });
+};
+
+export const getProfileApi = async () => {
+  return fetchWithAuth("/users/me", { method: "GET" });
+};
+
+// Ekspor alias getMeApi agar kecocokan import di reducer.ts terpenuhi
+export const getMeApi = getProfileApi;
+
+export const updateProfileApi = async (data: { name?: string; bio?: string }) => {
+  return fetchWithAuth("/users/me", {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data),
+  });
+};
+
+export const uploadProfilePhotoApi = async (photo: File) => {
+  const formData = new FormData();
+  formData.append("photo", photo);
+
+  return fetchWithAuth("/users/me/photo", {
+    method: "POST",
+    body: formData,
+  });
+};
+
+export const updatePasswordApi = async (data: { current_password?: string; password?: string }) => {
+  return fetchWithAuth("/users/me/password", {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data),
+  });
+};

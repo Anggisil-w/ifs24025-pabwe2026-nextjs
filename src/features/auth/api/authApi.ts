@@ -1,3 +1,17 @@
-import {apiFetch} from "@/helpers/apiHelper";
-export const loginApi=(email:string,password:string)=>apiFetch<any>("auth/login",{method:"POST",body:JSON.stringify({email,password})});
-export const registerApi=(name:string,email:string,password:string)=>apiFetch<any>("auth/register",{method:"POST",body:JSON.stringify({name,email,password})});
+import { fetchWithAuth } from "@/helpers/apiHelper";
+
+export const loginApi = async (email?: string, password?: string) => {
+  return fetchWithAuth("/auth/login", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email, password }),
+  });
+};
+
+export const registerApi = async (name?: string, email?: string, password?: string) => {
+  return fetchWithAuth("/auth/register", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ name, email, password }),
+  });
+};

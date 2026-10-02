@@ -3,19 +3,20 @@
 import Link from "next/link";
 import Image from "next/image";
 import { useState } from "react";
-import { useAppDispatch, useAppSelector } from "@/hooks/redux";
+import { useAppSelector } from "@/hooks/redux";
 import { removeAccessToken } from "@/helpers/apiHelper";
 import { IconLogout, IconUser, IconMenu2 } from "@tabler/icons-react";
 
-interface NavbarComponentProps {
+export interface NavbarComponentProps {
   onToggleSidebar?: () => void;
+  onMenu?: () => void; // Ditambahkan agar tidak error di PostLayout.tsx
 }
 
-export const NavbarComponent = ({ onToggleSidebar }: NavbarComponentProps) => {
-  const dispatch = useAppDispatch();
+export const NavbarComponent = ({ onToggleSidebar, onMenu }: NavbarComponentProps) => {
   const { profile } = useAppSelector((state) => state.users);
   const [dropdownOpen, setDropdownOpen] = useState(false);
-  const profilePhoto = (profile as any)?.photo_url;
+
+  const handleToggle = onToggleSidebar || onMenu;
 
   const handleLogout = () => {
     removeAccessToken();
@@ -25,10 +26,9 @@ export const NavbarComponent = ({ onToggleSidebar }: NavbarComponentProps) => {
   return (
     <header className="sticky top-0 z-30 bg-white border-b border-slate-200 px-4 py-3 shadow-sm">
       <div className="flex items-center justify-between max-w-7xl mx-auto">
-        {/* Sisi Kiri: Toggle Sidebar & Logo */}
         <div className="flex items-center gap-3">
           <button
-            onClick={onToggleSidebar}
+            onClick={handleToggle}
             className="p-2 text-slate-600 hover:text-slate-900 md:hidden focus:outline-none"
             aria-label="Toggle Sidebar"
           >
@@ -41,19 +41,14 @@ export const NavbarComponent = ({ onToggleSidebar }: NavbarComponentProps) => {
           </Link>
         </div>
 
-        {/* Sisi Kanan: Profil & Dropdown */}
         <div className="relative">
           <button
             onClick={() => setDropdownOpen(!dropdownOpen)}
             className="flex items-center gap-2 focus:outline-none p-1 rounded-full hover:bg-slate-100 transition"
           >
             <div className="w-9 h-9 rounded-full bg-indigo-500 text-white font-semibold flex items-center justify-center overflow-hidden border border-slate-200">
-              {profilePhoto ? (
-                <img
-                  src={profilePhoto}
-                  alt={profile?.name || "User"}
-                  className="w-full h-full object-cover"
-                />
+              {profile?.photo_url ? (
+                <img src={profile.photo_url} alt={profile.name || "User"} className="w-full h-full object-cover" />
               ) : (
                 <span>{profile?.name ? profile.name.charAt(0).toUpperCase() : "U"}</span>
               )}
@@ -63,7 +58,6 @@ export const NavbarComponent = ({ onToggleSidebar }: NavbarComponentProps) => {
             </span>
           </button>
 
-          {/* Dropdown Menu */}
           {dropdownOpen && (
             <div className="absolute right-0 mt-2 w-48 bg-white border border-slate-200 rounded-lg shadow-lg py-1 z-50">
               <div className="px-4 py-2 border-b border-slate-100">

@@ -4,67 +4,40 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { IconArticle, IconUserCheck, IconUsers, IconUser, IconX } from "@tabler/icons-react";
 
-interface SidebarComponentProps {
+export interface SidebarComponentProps {
   isOpen?: boolean;
+  open?: boolean; // Added to support open prop from PostLayout
   onClose?: () => void;
 }
 
-export const SidebarComponent = ({ isOpen = false, onClose }: SidebarComponentProps) => {
+export const SidebarComponent = ({ isOpen, open, onClose }: SidebarComponentProps) => {
   const pathname = usePathname();
+  const isSidebarOpen = open ?? isOpen ?? false;
 
   const navItems = [
-    {
-      label: "Semua Postingan",
-      href: "/",
-      icon: IconArticle,
-    },
-    {
-      label: "Postingan Saya",
-      href: "/?is_me=1",
-      icon: IconUserCheck,
-    },
-    {
-      label: "Daftar Pengguna",
-      href: "/users",
-      icon: IconUsers,
-    },
-    {
-      label: "Profil Saya",
-      href: "/profile",
-      icon: IconUser,
-    },
+    { label: "Semua Postingan", href: "/", icon: IconArticle },
+    { label: "Postingan Saya", href: "/?is_me=1", icon: IconUserCheck },
+    { label: "Daftar Pengguna", href: "/users", icon: IconUsers },
+    { label: "Profil Saya", href: "/profile", icon: IconUser },
   ];
-
-  const sidebarClasses = `
-    fixed inset-y-0 left-0 z-40 w-64 bg-white border-r border-slate-200 transform transition-transform duration-200 ease-in-out
-    md:translate-x-0 md:static md:z-auto
-    ${isOpen ? "translate-x-0" : "-translate-x-full"}
-  `;
 
   return (
     <>
-      {/* Overlay backdrop untuk mobile */}
-      {isOpen && (
-        <div
-          onClick={onClose}
-          className="fixed inset-0 bg-slate-900/40 z-30 md:hidden"
-          aria-hidden="true"
-        />
+      {isSidebarOpen && (
+        <div onClick={onClose} className="fixed inset-0 bg-slate-900/40 z-30 md:hidden" />
       )}
-
-      <aside className={sidebarClasses}>
+      <aside
+        className={`fixed inset-y-0 left-0 z-40 w-64 bg-white border-r border-slate-200 transform transition-transform duration-200 ease-in-out md:translate-x-0 md:static md:z-auto ${
+          isSidebarOpen ? "translate-x-0" : "-translate-x-full"
+        }`}
+      >
         <div className="flex flex-col h-full py-4 px-3">
-          {/* Header Mobile Toggle Close */}
           <div className="flex items-center justify-between px-3 mb-4 md:hidden">
             <span className="font-semibold text-slate-500 text-sm">Navigasi Menu</span>
-            <button
-              onClick={onClose}
-              className="p-1 text-slate-500 hover:text-slate-800 rounded-md"
-            >
+            <button onClick={onClose} className="p-1 text-slate-500 hover:text-slate-800 rounded-md">
               <IconX className="w-5 h-5" />
             </button>
           </div>
-
           <nav className="flex-1 space-y-1">
             {navItems.map((item) => {
               const Icon = item.icon;
