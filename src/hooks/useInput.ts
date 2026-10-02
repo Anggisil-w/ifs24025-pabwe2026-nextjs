@@ -1,2 +1,11 @@
-import { useState } from "react";
-export function useInput<T extends string|number="string">(initial:T){const [value,setValue]=useState<T>(initial); const onChange=(e:React.ChangeEvent<HTMLInputElement|HTMLTextAreaElement|HTMLSelectElement>)=>setValue(e.target.value as T); return {value,setValue,onChange};}
+import { useState, ChangeEvent } from "react";
+
+export function useInput(initialValue: string = "") {
+  const [value, setValue] = useState(initialValue);
+
+  const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    setValue(e.target.value);
+  };
+
+  return [value, handleChange, setValue] as const;
+}
