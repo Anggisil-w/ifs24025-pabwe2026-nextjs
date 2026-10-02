@@ -1,0 +1,11 @@
+import {apiFetch} from "@/helpers/apiHelper"; import type {Post,PostComment} from "@/types";
+export const getPostsApi=(is_me?:boolean)=>apiFetch<Post[]>("posts",{params:is_me===undefined?{}:{is_me:is_me?1:0}});
+export const getPostApi=(id:string|number)=>apiFetch<Post>(`posts/${id}`);
+export const addPostApi=(description:string)=>apiFetch<Post>("posts",{method:"POST",body:JSON.stringify({description})});
+export const changePostApi=(id:string|number,description:string)=>apiFetch<Post>(`posts/${id}`,{method:"PUT",body:JSON.stringify({description})});
+export const uploadPostCoverApi=(id:string|number,file:File)=>{const fd=new FormData();fd.append("cover",file);return apiFetch<Post>(`posts/${id}/cover`,{method:"POST",body:fd})};
+export const deletePostApi=(id:string|number)=>apiFetch<any>(`posts/${id}`,{method:"DELETE"});
+export const likePostApi=(id:string|number)=>apiFetch<Post>(`posts/${id}/likes`,{method:"POST"});
+export const addCommentApi=(id:string|number,comment:string)=>apiFetch<PostComment>(`posts/${id}/comments`,{method:"POST",body:JSON.stringify({comment})});
+export const deleteCommentApi=(id:string|number,commentId:string|number)=>apiFetch<any>(`posts/${id}/comments`,{method:"DELETE",body:JSON.stringify({comment_id:commentId})});
+export const deleteAllPostsApi=()=>apiFetch<any>("posts",{method:"DELETE"});
