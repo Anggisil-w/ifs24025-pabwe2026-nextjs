@@ -10,4 +10,5 @@ const nextConfig: NextConfig = {
     return [{ source: "/delcom-proxy/:path*", destination: `${API}/:path*` }];
   },
 };
+
 export default nextConfig;

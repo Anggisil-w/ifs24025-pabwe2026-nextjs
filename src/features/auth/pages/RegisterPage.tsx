@@ -36,6 +36,7 @@ export default function RegisterPage() {
         id="register-name-input"
         name="name"
         aria-label="Nama lengkap"
+        autoComplete="name"
         className="input"
         placeholder="Nama lengkap"
         value={name}
@@ -46,6 +47,7 @@ export default function RegisterPage() {
         id="register-email-input"
         name="email"
         aria-label="Email"
+        autoComplete="email"
         className="input"
         type="email"
         placeholder="Email"
@@ -57,6 +59,7 @@ export default function RegisterPage() {
         id="register-password-input"
         name="password"
         aria-label="Kata sandi"
+        autoComplete="new-password"
         className="input"
         type="password"
         placeholder="Kata sandi"
@@ -69,7 +72,7 @@ export default function RegisterPage() {
       </button>
       <p className="text-center text-sm text-slate-600">
         Sudah punya akun?{" "}
-        <Link className="font-semibold text-indigo-600" href="/auth/login">
+        <Link className="font-semibold text-indigo-600 underline underline-offset-2" href="/auth/login">
           Masuk
         </Link>
       </p>

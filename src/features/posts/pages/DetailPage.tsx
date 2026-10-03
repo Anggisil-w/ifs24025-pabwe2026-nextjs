@@ -194,7 +194,7 @@ export default function DetailPage() {
               </div>
               {c.user_id === me?.id && (
                 <button
-                  className="text-slate-600 hover:text-red-600"
+                  className="inline-flex size-9 items-center justify-center rounded-lg text-slate-600 hover:bg-slate-100 hover:text-red-600"
                   onClick={() => act(() => deleteComment(post.id, c.id))}
                   aria-label="Hapus komentar"
                 >
