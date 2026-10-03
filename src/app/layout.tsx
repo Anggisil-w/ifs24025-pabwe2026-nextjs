@@ -1,4 +1,3 @@
-
 import type { Metadata } from "next";
 import { Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
@@ -13,6 +12,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="id">
       <head>
         <link rel="preconnect" href="https://ui-avatars.com" />
+        <link rel="preconnect" href="https://open-api.delcom.org" />
       </head>
       <body className={font.className}>
         <Providers>{children}</Providers>

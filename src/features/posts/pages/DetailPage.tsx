@@ -5,7 +5,7 @@ import { useAppDispatch, useAppSelector } from "@/hooks/redux";
 import { asyncLoadPost } from "../states/reducer";
 import { addComment, changeCover, deleteComment, deletePost, toggleLike } from "../api/postApi";
 import { formatDate, showConfirmDialog, showErrorDialog } from "@/helpers/toolsHelper";
-import { avatarUrl } from "@/helpers/avatarHelper";
+import { assetUrl, avatarUrl } from "@/helpers/avatarHelper";
 import ChangeModal from "../modals/ChangeModal";
 
 type IconProps = SVGProps<SVGSVGElement> & {
@@ -109,10 +109,23 @@ export default function DetailPage() {
 
   const mine = me?.id === post.user_id;
   const liked = post.likes?.some((l) => l.user_id === me?.id);
+  const cover = assetUrl(post.cover);
 
   return (
     <article className="card mx-auto max-w-3xl overflow-hidden">
-      {post.cover ? <img src={post.cover} alt="" className="max-h-96 w-full object-cover" /> : <div className="h-48 bg-gradient-to-br from-indigo-200 via-violet-200 to-fuchsia-200" />}
+      {cover ? (
+        <img
+          src={cover}
+          alt=""
+          width={768}
+          height={384}
+          fetchPriority="high"
+          decoding="async"
+          className="max-h-96 w-full object-cover"
+        />
+      ) : (
+        <div className="h-48 bg-gradient-to-br from-indigo-200 via-violet-200 to-fuchsia-200" />
+      )}
       <div className="space-y-5 p-6">
         <h1 className="sr-only">Detail postingan</h1>
         <div className="flex items-center gap-3">

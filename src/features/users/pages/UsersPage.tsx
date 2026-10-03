@@ -39,6 +39,8 @@ export default function UsersPage() {
               width={48}
               height={48}
               className="size-12 rounded-full object-cover"
+              loading="lazy"
+              decoding="async"
             />
             <div className="min-w-0">
               <p className="truncate font-semibold">{u.name}</p>
