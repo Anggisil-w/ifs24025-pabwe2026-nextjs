@@ -1,11 +1,13 @@
 "use client";
 import { type ComponentProps, useEffect, useState } from "react";
 import Link from "next/link";
+import dynamic from "next/dynamic";
 import { useSearchParams } from "next/navigation";
 import { useAppDispatch, useAppSelector } from "@/hooks/redux";
 import { asyncLoadPosts } from "../states/reducer";
 import { formatDate } from "@/helpers/toolsHelper";
-import AddModal from "../modals/AddModal";
+
+const AddModal = dynamic(() => import("../modals/AddModal"));
 
 const Svg = ({ className, children, ...props }: ComponentProps<"svg">) => (
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className={className ?? "h-4 w-4"} aria-hidden="true" {...props}>
@@ -52,7 +54,11 @@ export default function HomePage() {
       <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
         {list.map((p) => (
           <Link key={p.id} href={`/posts/${p.id}`} className="card group overflow-hidden transition hover:-translate-y-1 hover:shadow-xl">
-            {p.cover ? <img src={p.cover} alt="" className="h-44 w-full object-cover" loading="lazy" decoding="async"/> : <div className="h-44 bg-gradient-to-br from-indigo-200 via-violet-200 to-fuchsia-200" />}
+            {p.cover ? (
+              <img src={p.cover} alt="" width={640} height={352} className="h-44 w-full object-cover" loading="lazy" decoding="async" />
+            ) : (
+              <div className="h-44 bg-gradient-to-br from-indigo-200 via-violet-200 to-fuchsia-200" />
+            )}
             <div className="space-y-2 p-4">
               <p className="text-sm font-semibold text-indigo-600">{p.author?.name}</p>
               <p className="line-clamp-3 text-slate-700">{p.description}</p>
