@@ -52,7 +52,7 @@ export default function HomePage() {
       <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
         {list.map((p) => (
           <Link key={p.id} href={`/posts/${p.id}`} className="card group overflow-hidden transition hover:-translate-y-1 hover:shadow-xl">
-            {p.cover ? <img src={p.cover} alt="" className="h-44 w-full object-cover" /> : <div className="h-44 bg-gradient-to-br from-indigo-200 via-violet-200 to-fuchsia-200" />}
+            {p.cover ? <img src={p.cover} alt="" className="h-44 w-full object-cover" loading="lazy" decoding="async"/> : <div className="h-44 bg-gradient-to-br from-indigo-200 via-violet-200 to-fuchsia-200" />}
             <div className="space-y-2 p-4">
               <p className="text-sm font-semibold text-indigo-600">{p.author?.name}</p>
               <p className="line-clamp-3 text-slate-700">{p.description}</p>
