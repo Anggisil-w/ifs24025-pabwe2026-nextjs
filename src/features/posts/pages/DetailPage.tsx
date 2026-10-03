@@ -73,15 +73,38 @@ export default function DetailPage() {
   const me = useAppSelector((s) => s.auth.profile);
   const [comment, setComment] = useState("");
   const [edit, setEdit] = useState(false);
+  const [failedId, setFailedId] = useState<string | null>(null);
 
   const load = () => dispatch(asyncLoadPost(postId));
-  useEffect(() => { dispatch(asyncLoadPost(postId)); }, [postId, dispatch]);
+
+  useEffect(() => {
+    dispatch(asyncLoadPost(postId)).then((result) => {
+      if (asyncLoadPost.rejected.match(result)) setFailedId(postId);
+    });
+  }, [postId, dispatch]);
 
   const act = async (fn: () => Promise<unknown>) => {
     try { await fn(); await load(); } catch (e) { showErrorDialog((e as Error).message); }
   };
 
-  if (!post || post.id !== postId) return <p className="text-slate-600">Memuat...</p>;
+  if (failedId === postId && (!post || post.id !== postId)) {
+    return (
+      <section className="card mx-auto max-w-3xl p-10 text-center">
+        <h1 className="text-xl font-extrabold">Postingan tidak ditemukan</h1>
+        <p className="mt-2 text-slate-600">Postingan ini mungkin sudah dihapus atau alamatnya salah.</p>
+        <button className="btn btn-primary mt-4" onClick={() => router.replace("/")}>Kembali ke linimasa</button>
+      </section>
+    );
+  }
+
+  if (!post || post.id !== postId) {
+    return (
+      <>
+        <h1 className="sr-only">Detail postingan</h1>
+        <p className="text-slate-600">Memuat...</p>
+      </>
+    );
+  }
 
   const mine = me?.id === post.user_id;
   const liked = post.likes?.some((l) => l.user_id === me?.id);
