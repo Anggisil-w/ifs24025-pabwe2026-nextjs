@@ -12,7 +12,7 @@ export const makeStore = (preloadedState?: Partial<RootState>) =>
 
 type Options = Omit<RenderOptions, "wrapper"> & { preloadedState?: Partial<RootState>; store?: ReturnType<typeof makeStore> };
 
-export function renderWithStore(ui: ReactElement, { preloadedState, store = makeStore(preloadedState), ...options }: Options = {}) {
+export function renderWithProviders(ui: ReactElement, { preloadedState, store = makeStore(preloadedState), ...options }: Options = {}) {
   const Wrapper = ({ children }: { children: ReactNode }) => <Provider store={store}>{children}</Provider>;
   return { store, ...render(ui, { wrapper: Wrapper, ...options }) };
 }

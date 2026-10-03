@@ -2,8 +2,9 @@
 import { useEffect, useState, type SVGProps } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { useAppDispatch, useAppSelector } from "@/hooks/redux";
-import { asyncLoadPost } from "../states/reducer";
-import { addComment, changeCover, deleteComment, deletePost, toggleLike } from "../api/postApi";
+import {
+  asyncAddComment, asyncChangeCover, asyncDeleteComment, asyncDeletePost, asyncLoadPost, asyncToggleLike,
+} from "../states/reducer";
 import { formatDate, showConfirmDialog, showErrorDialog } from "@/helpers/toolsHelper";
 import { assetUrl, avatarUrl } from "@/helpers/avatarHelper";
 import ChangeModal from "../modals/ChangeModal";
@@ -70,7 +71,7 @@ export default function DetailPage() {
   const { postId } = useParams<{ postId: string }>();
   const router = useRouter();
   const dispatch = useAppDispatch();
-  const { post } = useAppSelector((s) => s.posts);
+  const { post, isPostLike, isPostAddComment } = useAppSelector((s) => s.posts);
   const me = useAppSelector((s) => s.auth.profile);
   const [comment, setComment] = useState("");
   const [edit, setEdit] = useState(false);
@@ -147,7 +148,8 @@ export default function DetailPage() {
           <button
             aria-label={liked ? "Batal suka" : "Suka"}
             className={`btn ${liked ? "btn-primary" : "btn-ghost"}`}
-            onClick={() => act(() => toggleLike(post.id))}
+            disabled={isPostLike}
+            onClick={() => act(() => dispatch(asyncToggleLike(post.id)).unwrap())}
           >
             <FiHeart />{post.likes?.length ?? 0}
           </button>
@@ -163,7 +165,7 @@ export default function DetailPage() {
                   className="sr-only"
                   onChange={(e) => {
                     const file = e.target.files?.[0];
-                    if (file) act(() => changeCover(post.id, file));
+                    if (file) act(() => dispatch(asyncChangeCover({ id: post.id, file })).unwrap());
                   }}
                 />
               </label>
@@ -171,9 +173,12 @@ export default function DetailPage() {
               <button
                 className="btn btn-ghost !text-red-600"
                 onClick={async () => {
-                  if (await showConfirmDialog("Hapus postingan ini?")) {
-                    await deletePost(post.id);
+                  if (!(await showConfirmDialog("Hapus postingan ini?"))) return;
+                  try {
+                    await dispatch(asyncDeletePost(post.id)).unwrap();
                     router.replace("/");
+                  } catch (e) {
+                    showErrorDialog((e as Error).message);
                   }
                 }}
               >
@@ -189,7 +194,10 @@ export default function DetailPage() {
           className="flex gap-2"
           onSubmit={(e) => {
             e.preventDefault();
-            act(async () => { await addComment(post.id, comment); setComment(""); });
+            act(async () => {
+              await dispatch(asyncAddComment({ id: post.id, comment })).unwrap();
+              setComment("");
+            });
           }}
         >
           <input
@@ -202,7 +210,7 @@ export default function DetailPage() {
             onChange={(e) => setComment(e.target.value)}
             required
           />
-          <button type="submit" aria-label="Kirim komentar" className="btn btn-primary"><FiSend /></button>
+          <button type="submit" aria-label="Kirim komentar" className="btn btn-primary" disabled={isPostAddComment}><FiSend /></button>
         </form>
 
         <ul className="space-y-3">
@@ -215,7 +223,7 @@ export default function DetailPage() {
               {c.user_id === me?.id && (
                 <button
                   className="inline-flex size-9 items-center justify-center rounded-lg text-slate-600 hover:bg-slate-100 hover:text-red-600"
-                  onClick={() => act(() => deleteComment(post.id, c.id))}
+                  onClick={() => act(() => dispatch(asyncDeleteComment({ id: post.id, commentId: c.id })).unwrap())}
                   aria-label="Hapus komentar"
                 >
                   <FiTrash2 />
