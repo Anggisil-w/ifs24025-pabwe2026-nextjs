@@ -6,6 +6,7 @@ const nextConfig: NextConfig = {
   reactStrictMode: true,
   images: { unoptimized: true },
   compress: true,
+  experimental: { inlineCss: true },
   async rewrites() {
     return [{ source: "/delcom-proxy/:path*", destination: `${API}/:path*` }];
   },
