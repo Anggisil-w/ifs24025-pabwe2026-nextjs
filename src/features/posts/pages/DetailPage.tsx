@@ -6,7 +6,8 @@ import {
   asyncAddComment, asyncChangeCover, asyncDeleteComment, asyncDeletePost, asyncLoadPost, asyncToggleLike,
 } from "../states/reducer";
 import { formatDate, showConfirmDialog, showErrorDialog } from "@/helpers/toolsHelper";
-import { assetUrl, avatarUrl } from "@/helpers/avatarHelper";
+import { assetUrl } from "@/helpers/avatarHelper";
+import Avatar from "@/components/Avatar";
 import ChangeModal from "../modals/ChangeModal";
 
 type IconProps = SVGProps<SVGSVGElement> & {
@@ -130,13 +131,7 @@ export default function DetailPage() {
       <div className="space-y-5 p-6">
         <h1 className="sr-only">Detail postingan</h1>
         <div className="flex items-center gap-3">
-          <img
-            src={avatarUrl(post.author?.photo, post.author?.name, 80)}
-            alt=""
-            width={40}
-            height={40}
-            className="size-10 rounded-full object-cover"
-          />
+          <Avatar photo={post.author?.photo} name={post.author?.name} size={40} />
           <div>
             <p className="font-semibold">{post.author?.name}</p>
             <p className="text-xs text-slate-600">{formatDate(post.created_at)}</p>

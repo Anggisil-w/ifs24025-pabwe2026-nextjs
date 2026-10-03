@@ -4,7 +4,7 @@ import useInput from "@/hooks/useInput";
 import { asyncLoadProfile } from "@/features/auth/states/reducer";
 import { changePassword, updateMe, uploadPhoto } from "../api/userApi";
 import { showErrorDialog, showSuccessDialog } from "@/helpers/toolsHelper";
-import { avatarUrl } from "@/helpers/avatarHelper";
+import Avatar from "@/components/Avatar";
 import type { User } from "@/types";
 
 export default function ProfilePage() {
@@ -35,13 +35,7 @@ function ProfileForm({ me }: { me: User }) {
       <h1 className="text-2xl font-extrabold">Profil Saya</h1>
 
       <div className="card flex items-center gap-5 p-6">
-        <img
-          src={avatarUrl(me.photo, me.name, 128)}
-          alt=""
-          width={80}
-          height={80}
-          className="size-20 rounded-full object-cover"
-        />
+        <Avatar photo={me.photo} name={me.name} size={80} />
         <label className="btn btn-ghost cursor-pointer focus-within:ring-4 focus-within:ring-indigo-100">
           Ganti foto
           <input

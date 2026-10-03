@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useAppSelector } from "@/hooks/redux";
-import { avatarUrl } from "@/helpers/avatarHelper";
+import Avatar from "@/components/Avatar";
 
 function MenuIcon() {
   return (
@@ -41,13 +41,7 @@ export default function NavbarComponent({ onMenu, onLogout }: { onMenu: () => vo
       </div>
       <div className="flex items-center gap-3">
         <Link href="/profile" aria-label={me?.name ? `Profil ${me.name}` : "Profil saya"} className="flex items-center gap-2">
-          <img
-            src={avatarUrl(me?.photo, me?.name, 72)}
-            alt=""
-            width={36}
-            height={36}
-            className="size-9 rounded-full object-cover"
-          />
+          <Avatar photo={me?.photo} name={me?.name} size={36} />
           <span className="hidden text-sm font-semibold sm:block">{me?.name}</span>
         </Link>
         <button onClick={onLogout} className="btn btn-ghost !px-3" aria-label="Keluar">

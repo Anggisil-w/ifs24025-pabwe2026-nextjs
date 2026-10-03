@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
-import Providers from "@/components/Providers";
 
 const font = Plus_Jakarta_Sans({ subsets: ["latin"] });
 
@@ -10,13 +9,7 @@ export const metadata: Metadata = { title: "Postingan", description: "Aplikasi P
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="id">
-      <head>
-        <link rel="preconnect" href="https://ui-avatars.com" />
-        <link rel="preconnect" href="https://open-api.delcom.org" />
-      </head>
-      <body className={font.className}>
-        <Providers>{children}</Providers>
-      </body>
+      <body className={font.className}>{children}</body>
     </html>
   );
 }
