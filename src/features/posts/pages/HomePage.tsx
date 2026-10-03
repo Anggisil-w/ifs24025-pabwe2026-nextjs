@@ -74,12 +74,21 @@ export default function HomePage() {
       {isPost && <p className="text-slate-600">Memuat...</p>}
       {!isPost && list.length === 0 && <div className="card p-10 text-center text-slate-600">Belum ada postingan.</div>}
       <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
-        {list.map((p) => {
+        {list.map((p, i) => {
           const cover = assetUrl(p.cover);
           return (
             <Link key={p.id} href={`/posts/${p.id}`} className="card group overflow-hidden transition hover:-translate-y-1 hover:shadow-xl">
               {cover ? (
-                <img src={cover} alt="" width={640} height={352} className="h-44 w-full object-cover" loading="lazy" decoding="async" />
+                <img
+                  src={cover}
+                  alt=""
+                  width={640}
+                  height={352}
+                  className="h-44 w-full object-cover"
+                  loading={i < 3 ? "eager" : "lazy"}
+                  fetchPriority={i === 0 ? "high" : undefined}
+                  decoding="async"
+                />
               ) : (
                 <div className="h-44 bg-gradient-to-br from-indigo-200 via-violet-200 to-fuchsia-200" />
               )}
