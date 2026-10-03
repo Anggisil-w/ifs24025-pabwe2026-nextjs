@@ -8,6 +8,7 @@ import { asyncDeleteAllPosts, asyncLoadPosts } from "../states/reducer";
 import { resetPostStatus } from "../states/action";
 import { formatDate, showConfirmDialog, showErrorDialog, showSuccessDialog } from "@/helpers/toolsHelper";
 import { assetUrl } from "@/helpers/avatarHelper";
+import Image from "next/image";
 
 const AddModal = dynamic(() => import("../modals/AddModal"));
 
@@ -74,38 +75,39 @@ export default function HomePage() {
       {isPost && <p className="text-slate-600">Memuat...</p>}
       {!isPost && list.length === 0 && <div className="card p-10 text-center text-slate-600">Belum ada postingan.</div>}
       <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
-        {list.map((p, i) => {
-          const cover = assetUrl(p.cover);
-          return (
-            <Link key={p.id} href={`/posts/${p.id}`} className="card group overflow-hidden transition hover:-translate-y-1 hover:shadow-xl">
-              {cover ? (
-                <img
-                  src={cover}
-                  alt=""
-                  width={640}
-                  height={352}
-                  className="h-44 w-full object-cover"
-                  loading={i < 3 ? "eager" : "lazy"}
-                  fetchPriority={i === 0 ? "high" : undefined}
-                  decoding="async"
-                />
-              ) : (
-                <div className="h-44 bg-gradient-to-br from-indigo-200 via-violet-200 to-fuchsia-200" />
-              )}
-              <div className="space-y-2 p-4">
-                <p className="text-sm font-semibold text-indigo-600">{p.author?.name}</p>
-                <p className="line-clamp-3 text-slate-700">{p.description}</p>
-                <div className="flex items-center justify-between pt-2 text-xs text-slate-600">
-                  <span>{formatDate(p.created_at)}</span>
-                  <span className="flex gap-3">
-                    <span className="flex items-center gap-1"><HeartIcon />{p.likes?.length ?? p.total_likes ?? 0}</span>
-                    <span className="flex items-center gap-1"><MessageIcon />{p.comments?.length ?? p.total_comments ?? 0}</span>
-                  </span>
-                </div>
-              </div>
-            </Link>
-          );
-        })}
+{list.map((p, i) => {
+  const cover = assetUrl(p.cover);
+  return (
+    <Link key={p.id} href={`/posts/${p.id}`} className="card group overflow-hidden transition hover:-translate-y-1 hover:shadow-xl">
+      {cover ? (
+        <Image
+          src={cover}
+          alt=""
+          width={640}
+          height={352}
+          sizes="(min-width: 1280px) 33vw, (min-width: 640px) 50vw, 100vw"
+          quality={70}
+          priority={i === 0}
+          loading={i === 0 ? undefined : i < 3 ? "eager" : "lazy"}
+          className="h-44 w-full object-cover"
+        />
+      ) : (
+        <div className="h-44 bg-gradient-to-br from-indigo-200 via-violet-200 to-fuchsia-200" />
+      )}
+      <div className="space-y-2 p-4">
+        <p className="text-sm font-semibold text-indigo-600">{p.author?.name}</p>
+        <p className="line-clamp-3 text-slate-700">{p.description}</p>
+        <div className="flex items-center justify-between pt-2 text-xs text-slate-600">
+          <span>{formatDate(p.created_at)}</span>
+          <span className="flex gap-3">
+            <span className="flex items-center gap-1"><HeartIcon />{p.likes?.length ?? p.total_likes ?? 0}</span>
+            <span className="flex items-center gap-1"><MessageIcon />{p.comments?.length ?? p.total_comments ?? 0}</span>
+          </span>
+        </div>
+      </div>
+    </Link>
+  );
+})}
       </div>
       {add && <AddModal onClose={() => setAdd(false)} onDone={load} />}
     </div>

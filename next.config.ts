@@ -4,9 +4,15 @@ const API = process.env.NEXT_PUBLIC_DELCOM_BASEURL || "https://open-api.delcom.o
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,
-  images: { unoptimized: true },
   compress: true,
   productionBrowserSourceMaps: true,
+  images: {
+    formats: ["image/webp"],
+    remotePatterns: [
+      { protocol: "https", hostname: "open-api.delcom.org", pathname: "/**" },
+      { protocol: "https", hostname: "ui-avatars.com", pathname: "/**" },
+    ],
+  },
   experimental: { inlineCss: true },
   async rewrites() {
     return [{ source: "/delcom-proxy/:path*", destination: `${API}/:path*` }];
