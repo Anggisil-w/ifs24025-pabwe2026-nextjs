@@ -12,7 +12,7 @@ export default function PostLayout({ children }: { children: React.ReactNode }) 
   useEffect(() => { if (!getAccessToken()) router.replace("/auth/login"); else dispatch(asyncLoadProfile()); }, [dispatch, router]);
   useEffect(() => { if (isProfile && !profile) router.replace("/auth/login"); }, [isProfile, profile, router]);
   const logout = async () => { if (await showConfirmDialog("Keluar dari akun?")) { dispatch(isAuthLogout()); router.replace("/auth/login"); } };
-  if (!profile) return <div className="grid min-h-screen place-items-center text-slate-400">Memuat...</div>;
+  if (!profile) return <main className="grid min-h-screen place-items-center text-slate-600"><h1 className="sr-only">Memuat</h1>Memuat...</main>;
   return (
     <div className="min-h-screen">
       <NavbarComponent onMenu={() => setOpen(true)} onLogout={logout} />

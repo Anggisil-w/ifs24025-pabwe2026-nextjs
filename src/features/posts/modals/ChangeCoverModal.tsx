@@ -34,7 +34,7 @@ export default function ChangeCoverModal({ post, onClose, onDone }: { post: Post
           if (f) setPreview(URL.createObjectURL(f));
         }} />
         <span className="font-semibold text-slate-700">Pilih gambar cover</span>
-        <span className="mt-1 block text-sm text-slate-400">PNG, JPG, WEBP</span>
+        <span className="mt-1 block text-sm text-slate-600">PNG, JPG, WEBP</span>
       </label>
       {preview && <img src={preview} alt="Preview cover" className="max-h-56 w-full rounded-2xl object-cover" />}
       <div className="flex justify-end gap-2">

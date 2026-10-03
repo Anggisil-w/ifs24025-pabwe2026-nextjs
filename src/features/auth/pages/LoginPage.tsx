@@ -28,7 +28,7 @@ export default function LoginPage() {
 
   return (
     <form onSubmit={submit} className="card space-y-4 p-8">
-      <h2 className="text-2xl font-extrabold">Selamat datang 👋</h2>
+      <h1 className="text-2xl font-extrabold">Selamat datang 👋</h1>
       <p className="text-sm text-slate-500">Masuk untuk melanjutkan</p>
       <input
         id="login-email-input"
