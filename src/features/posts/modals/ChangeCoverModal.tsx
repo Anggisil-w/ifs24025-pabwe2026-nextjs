@@ -1,94 +1,45 @@
 "use client";
-
 import { useState } from "react";
-import { useAppDispatch } from "@/hooks/redux";
-import { uploadPostCover } from "../states/action";
+import { changeCover } from "../api/postApi";
 import { showErrorDialog, showSuccessDialog } from "@/helpers/toolsHelper";
-import { Modal } from "./AddModal";
+import Modal from "./Modal";
 import type { Post } from "@/types";
+import AddModal from "./AddModal";
 
-export default function ChangeCoverModal({
-  post,
-  onClose,
-}: {
-  post: Post;
-  onClose: () => void;
-}) {
-  const dispatch = useAppDispatch();
+export default function ChangeCoverModal({ post, onClose, onDone }: { post: Post; onClose: () => void; onDone: () => void }) {
   const [file, setFile] = useState<File | null>(null);
-  const [preview, setPreview] = useState<string>(
-    post.cover || post.cover_url || ""
-  );
+  const [preview, setPreview] = useState<string>(post.cover || "");
   const [loading, setLoading] = useState(false);
 
   const submit = async () => {
-    if (!file) {
-      showErrorDialog("Pilih gambar terlebih dahulu.");
-      return;
-    }
-
+    if (!file) return void showErrorDialog("Pilih gambar terlebih dahulu.");
     setLoading(true);
-
-    const result = await dispatch(
-      uploadPostCover({ id: post.id, cover: file, file })
-    );
-
-    if (uploadPostCover.fulfilled.match(result)) {
+    try {
+      await changeCover(post.id, file);
       await showSuccessDialog("Cover berhasil diperbarui.");
+      onDone();
       onClose();
-    } else {
-      showErrorDialog(result.error.message || "Upload gagal");
+    } catch (err) {
+      showErrorDialog((err as Error).message || "Upload gagal");
+      setLoading(false);
     }
-
-    setLoading(false);
   };
 
   return (
     <Modal title="Ganti cover" onClose={onClose}>
-      <div className="space-y-4">
-        <label className="block cursor-pointer rounded-2xl border-2 border-dashed border-slate-200 p-6 text-center hover:bg-slate-50">
-          <input
-            type="file"
-            accept="image/*"
-            className="hidden"
-            onChange={(e) => {
-              const selectedFile = e.target.files?.[0] || null;
-              setFile(selectedFile);
-              if (selectedFile) {
-                setPreview(URL.createObjectURL(selectedFile));
-              }
-            }}
-          />
-          <span className="font-semibold text-slate-700">Pilih gambar cover</span>
-          <span className="mt-1 block text-sm text-slate-400">
-            PNG, JPG, WEBP
-          </span>
-        </label>
-
-        {preview && (
-          <img
-            src={preview}
-            alt="Preview cover"
-            className="max-h-56 w-full rounded-2xl object-cover"
-          />
-        )}
-
-        <div className="flex justify-end gap-2">
-          <button
-            type="button"
-            onClick={onClose}
-            className="rounded-xl px-4 py-2.5 font-semibold text-slate-600 hover:bg-slate-100"
-          >
-            Batal
-          </button>
-          <button
-            onClick={submit}
-            disabled={loading}
-            className="rounded-xl bg-slate-950 px-5 py-2.5 font-semibold text-white hover:bg-slate-800 disabled:opacity-50"
-          >
-            {loading ? "Mengunggah…" : "Unggah"}
-          </button>
-        </div>
+      <label className="block cursor-pointer rounded-2xl border-2 border-dashed border-slate-200 p-6 text-center hover:bg-slate-50">
+        <input type="file" accept="image/*" className="hidden" onChange={(e) => {
+          const f = e.target.files?.[0] || null;
+          setFile(f);
+          if (f) setPreview(URL.createObjectURL(f));
+        }} />
+        <span className="font-semibold text-slate-700">Pilih gambar cover</span>
+        <span className="mt-1 block text-sm text-slate-400">PNG, JPG, WEBP</span>
+      </label>
+      {preview && <img src={preview} alt="Preview cover" className="max-h-56 w-full rounded-2xl object-cover" />}
+      <div className="flex justify-end gap-2">
+        <button type="button" className="btn btn-ghost" onClick={onClose}>Batal</button>
+        <button className="btn btn-primary" onClick={submit} disabled={loading}>{loading ? "Mengunggah…" : "Unggah"}</button>
       </div>
     </Modal>
   );

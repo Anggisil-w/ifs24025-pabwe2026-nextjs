@@ -1,12 +1,69 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useState, type SVGProps } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { FiHeart, FiTrash2, FiEdit2, FiImage, FiSend } from "react-icons/fi";
 import { useAppDispatch, useAppSelector } from "@/hooks/redux";
 import { asyncLoadPost } from "../states/reducer";
 import { addComment, changeCover, deleteComment, deletePost, toggleLike } from "../api/postApi";
 import { formatDate, showConfirmDialog, showErrorDialog } from "@/helpers/toolsHelper";
 import ChangeModal from "../modals/ChangeModal";
+
+type IconProps = SVGProps<SVGSVGElement> & {
+  size?: number | string;
+};
+
+const IconBase = ({ size = 18, ...props }: IconProps) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="1.8"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    width={size}
+    height={size}
+    {...props}
+  />
+);
+
+const FiHeart = (props: SVGProps<SVGSVGElement>) => (
+  <IconBase {...props}>
+    <path d="M12 21s-8.5-4.7-10.3-9.3C.9 9.6 2.5 5 6.7 5c2.1 0 3.3 1.1 4.1 2.2A5.1 5.1 0 0 1 15 5c4.2 0 5.8 4.6 5 6.7C20.5 16.3 12 21 12 21Z" />
+  </IconBase>
+);
+
+const FiTrash2 = (props: SVGProps<SVGSVGElement>) => (
+  <IconBase {...props}>
+    <path d="M3 6h18" />
+    <path d="M8 6V4h8v2" />
+    <path d="M19 6l-1 14H6L5 6" />
+    <path d="M10 11v5" />
+    <path d="M14 11v5" />
+  </IconBase>
+);
+
+const FiEdit2 = (props: SVGProps<SVGSVGElement>) => (
+  <IconBase {...props}>
+    <path d="M12 20h9" />
+    <path d="M16.5 3.5a2.1 2.1 0 1 1 3 3L7 19l-4 1 1-4 12.5-12.5Z" />
+  </IconBase>
+);
+
+const FiImage = (props: SVGProps<SVGSVGElement>) => (
+  <IconBase {...props}>
+    <rect x="3" y="5" width="18" height="14" rx="2" />
+    <circle cx="8.5" cy="10" r="1.5" />
+    <path d="m21 15-5.5-5.5a1 1 0 0 0-1.4 0L7 17" />
+  </IconBase>
+);
+
+const FiSend = (props: SVGProps<SVGSVGElement>) => (
+  <IconBase {...props}>
+    <path d="M22 2 11 13" />
+    <path d="M22 2 15 22l-4-9-9-4 20-7Z" />
+  </IconBase>
+);
+
 export default function DetailPage() {
   const { postId } = useParams<{ postId: string }>(); const router = useRouter(); const dispatch = useAppDispatch();
   const { post } = useAppSelector((s) => s.posts); const me = useAppSelector((s) => s.auth.profile);

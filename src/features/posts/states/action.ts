@@ -4,43 +4,28 @@ import * as postApi from "../api/postApi";
 export const fetchPosts = createAsyncThunk(
   "posts/fetchPosts",
   async (isMe?: boolean) => {
-    const res = await postApi.getPostsApi(isMe ?? false);
-    return res.data || res;
+    return postApi.getPosts(isMe ?? false);
   }
 );
 
 export const fetchPost = createAsyncThunk(
   "posts/fetchPost",
   async (id: string) => {
-    const res = await postApi.getPostApi(id);
-    return res.data || res;
+    return postApi.getPost(id);
   }
 );
 
-export const addPost = createAsyncThunk(
+export const addPost = createAsyncThunk<void, string | undefined>(
   "posts/addPost",
-  async (payload?: { cover?: File; description?: string } | File | string) => {
-    let cover: File = new File([], "");
-    let description: string = "";
-
-    if (payload && typeof payload === "object") {
-      if ("cover" in payload && payload.cover) cover = payload.cover;
-      if ("description" in payload && payload.description) description = payload.description;
-      if (payload instanceof File) cover = payload;
-    } else if (typeof payload === "string") {
-      description = payload;
-    }
-
-    const res = await postApi.addPostApi(cover, description);
-    return res.data || res;
+  async (description = "") => {
+    await postApi.addPost(description);
   }
 );
 
 export const changePost = createAsyncThunk(
   "posts/changePost",
   async ({ id, description }: { id: string; description: string }) => {
-    const res = await postApi.changePostApi(id, description);
-    return res.data || res;
+    return postApi.changePost(id, description);
   }
 );
 
@@ -50,15 +35,14 @@ export const uploadPostCover = createAsyncThunk(
     const coverFile = payload.cover || payload.file;
     if (!coverFile) throw new Error("File cover is required");
 
-    const res = await postApi.uploadPostCoverApi(payload.id, coverFile);
-    return res.data || res;
+    return postApi.changeCover(payload.id, coverFile);
   }
 );
 
 export const deletePost = createAsyncThunk(
   "posts/deletePost",
   async (id: string) => {
-    await postApi.deletePostApi(id);
+    await postApi.deletePost(id);
     return id;
   }
 );
@@ -66,16 +50,14 @@ export const deletePost = createAsyncThunk(
 export const likePost = createAsyncThunk(
   "posts/likePost",
   async (id: string) => {
-    const res = await postApi.likePostApi(id);
-    return res.data || res;
+    return postApi.toggleLike(id);
   }
 );
 
 export const addComment = createAsyncThunk(
   "posts/addComment",
   async ({ id, comment }: { id: string; comment: string }) => {
-    const res = await postApi.addCommentApi(id, comment);
-    return res.data || res;
+    return postApi.addComment(id, comment);
   }
 );
 
@@ -89,7 +71,7 @@ export const deleteComment = createAsyncThunk(
       throw new Error("postId and commentId are required");
     }
 
-    await postApi.deleteCommentApi(targetPostId, targetCommentId);
+    await postApi.deleteComment(targetPostId, targetCommentId);
     return targetCommentId;
   }
 );
