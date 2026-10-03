@@ -29,11 +29,12 @@ export default function LoginPage() {
   return (
     <form onSubmit={submit} className="card space-y-4 p-8">
       <h1 className="text-2xl font-extrabold">Selamat datang 👋</h1>
-      <p className="text-sm text-slate-500">Masuk untuk melanjutkan</p>
+      <p className="text-sm text-slate-600">Masuk untuk melanjutkan</p>
       <input
         id="login-email-input"
         name="email"
         aria-label="Email"
+        autoComplete="email"
         className="input"
         type="email"
         placeholder="Email"
@@ -45,6 +46,7 @@ export default function LoginPage() {
         id="login-password-input"
         name="password"
         aria-label="Kata sandi"
+        autoComplete="current-password"
         className="input"
         type="password"
         placeholder="Kata sandi"
@@ -55,7 +57,7 @@ export default function LoginPage() {
       <button id="login-submit-button" type="submit" className="btn btn-primary w-full" disabled={busy}>
         {busy ? "Memproses..." : "Masuk"}
       </button>
-      <p className="text-center text-sm text-slate-500">
+      <p className="text-center text-sm text-slate-600">
         Belum punya akun?{" "}
         <Link className="font-semibold text-indigo-600" href="/auth/register">
           Daftar
