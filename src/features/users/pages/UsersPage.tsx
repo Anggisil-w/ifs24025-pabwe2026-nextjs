@@ -11,7 +11,8 @@ export default function UsersPage() {
   const [q, setQ] = useState("");
 
   useEffect(() => {
-    const t = setTimeout(() => dispatch(asyncLoadUsers(q || undefined)), 300);
+    // Muat awal (q kosong) langsung tanpa jeda; debounce 300ms hanya saat mengetik pencarian.
+    const t = setTimeout(() => dispatch(asyncLoadUsers(q || undefined)), q ? 300 : 0);
     return () => clearTimeout(t);
   }, [q, dispatch]);
 
