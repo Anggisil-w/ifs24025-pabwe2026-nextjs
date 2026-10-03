@@ -5,10 +5,16 @@ import { asyncLoadProfile } from "@/features/auth/states/reducer";
 import { changePassword, updateMe, uploadPhoto } from "../api/userApi";
 import { showErrorDialog, showSuccessDialog } from "@/helpers/toolsHelper";
 import { avatarUrl } from "@/helpers/avatarHelper";
+import type { User } from "@/types";
 
 export default function ProfilePage() {
-  const dispatch = useAppDispatch();
   const me = useAppSelector((s) => s.auth.profile);
+  // Form baru dipasang setelah profil tersedia agar nilai awal input terisi.
+  return me ? <ProfileForm me={me} /> : null;
+}
+
+function ProfileForm({ me }: { me: User }) {
+  const dispatch = useAppDispatch();
   const [name, onName] = useInput(me?.name || "");
   const [email, onEmail] = useInput(me?.email || "");
   const [pass, onPass, setPass] = useInput();
@@ -23,8 +29,6 @@ export default function ProfilePage() {
       showErrorDialog((e as Error).message);
     }
   };
-
-  if (!me) return null;
 
   return (
     <div className="mx-auto max-w-2xl space-y-6">

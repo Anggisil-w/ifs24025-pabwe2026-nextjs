@@ -1,5 +1,5 @@
 "use client";
-import { Suspense, useEffect, useState } from "react";
+import { Suspense, useEffect, useState, useSyncExternalStore } from "react";
 import { useRouter } from "next/navigation";
 import { useAppDispatch, useAppSelector } from "@/hooks/redux";
 import { getAccessToken } from "@/helpers/apiHelper";
@@ -8,18 +8,24 @@ import { showConfirmDialog } from "@/helpers/toolsHelper";
 import NavbarComponent from "../components/NavbarComponent";
 import SidebarComponent from "../components/SidebarComponent";
 
+const subscribeToken = (cb: () => void) => {
+  window.addEventListener("storage", cb);
+  return () => window.removeEventListener("storage", cb);
+};
+
 export default function PostLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const dispatch = useAppDispatch();
   const { profile, isProfile } = useAppSelector((s) => s.auth);
   const [open, setOpen] = useState(false);
-  const [hasToken, setHasToken] = useState(false);
+  // Baca token dari localStorage tanpa setState di dalam effect (server snapshot = false, aman untuk hydration).
+  const hasToken = useSyncExternalStore(subscribeToken, () => !!getAccessToken(), () => false);
 
   // Token ada -> tampilkan shell + konten segera; profil dimuat paralel dengan data halaman
   // (sebelumnya halaman menunggu profil selesai dulu, sehingga request berurutan / waterfall).
   useEffect(() => {
     if (!getAccessToken()) router.replace("/auth/login");
-    else { setHasToken(true); dispatch(asyncLoadProfile()); }
+    else dispatch(asyncLoadProfile());
   }, [dispatch, router]);
 
   useEffect(() => {
@@ -29,7 +35,6 @@ export default function PostLayout({ children }: { children: React.ReactNode }) 
   const logout = async () => {
     if (await showConfirmDialog("Keluar dari akun?")) {
       dispatch(isAuthLogout());
-      setHasToken(false);
       router.replace("/auth/login");
     }
   };
