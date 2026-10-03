@@ -13,10 +13,13 @@ export default function PostLayout({ children }: { children: React.ReactNode }) 
   const dispatch = useAppDispatch();
   const { profile, isProfile } = useAppSelector((s) => s.auth);
   const [open, setOpen] = useState(false);
+  const [hasToken, setHasToken] = useState(false);
 
+  // Token ada -> tampilkan shell + konten segera; profil dimuat paralel dengan data halaman
+  // (sebelumnya halaman menunggu profil selesai dulu, sehingga request berurutan / waterfall).
   useEffect(() => {
     if (!getAccessToken()) router.replace("/auth/login");
-    else dispatch(asyncLoadProfile());
+    else { setHasToken(true); dispatch(asyncLoadProfile()); }
   }, [dispatch, router]);
 
   useEffect(() => {
@@ -26,11 +29,12 @@ export default function PostLayout({ children }: { children: React.ReactNode }) 
   const logout = async () => {
     if (await showConfirmDialog("Keluar dari akun?")) {
       dispatch(isAuthLogout());
+      setHasToken(false);
       router.replace("/auth/login");
     }
   };
 
-  if (!profile) {
+  if (!profile && !hasToken) {
     return (
       <main className="grid min-h-screen place-items-center text-slate-600">
         <h1 className="sr-only">Memuat</h1>

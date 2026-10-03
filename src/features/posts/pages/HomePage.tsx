@@ -88,7 +88,7 @@ export default function HomePage() {
           sizes="(min-width: 1280px) 33vw, (min-width: 640px) 50vw, 100vw"
           quality={70}
           priority={i === 0}
-          loading={i === 0 ? undefined : i < 3 ? "eager" : "lazy"}
+          loading={i === 0 ? undefined : "lazy"}
           className="h-44 w-full object-cover"
         />
       ) : (
