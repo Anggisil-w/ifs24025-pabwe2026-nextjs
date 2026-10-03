@@ -38,9 +38,10 @@ export default function UsersPage() {
               alt=""
               width={48}
               height={48}
-              className="size-12 rounded-full object-cover"
               loading="lazy"
               decoding="async"
+              fetchPriority="low"
+              className="size-12 rounded-full object-cover"
             />
             <div className="min-w-0">
               <p className="truncate font-semibold">{u.name}</p>
