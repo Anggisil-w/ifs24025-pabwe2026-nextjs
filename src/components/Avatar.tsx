@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { assetUrl } from "@/helpers/avatarHelper";
 
 const initials = (name?: string | null) => {
@@ -7,13 +8,21 @@ const initials = (name?: string | null) => {
 
 type Props = { photo?: string | null; name?: string | null; size: number; className?: string };
 
-// Avatar tanpa request jaringan pihak ketiga: foto asli dari API, atau inisial yang digambar dengan CSS.
+// Foto asli lewat next/image (di-resize & dikonversi WebP sesuai ukuran avatar),
+// atau inisial yang digambar dengan CSS tanpa request jaringan.
 export default function Avatar({ photo, name, size, className = "" }: Props) {
   const url = photo && !photo.includes("/default/") ? assetUrl(photo) : null;
   if (url) {
     return (
-      // eslint-disable-next-line @next/next/no-img-element
-      <img src={url} alt="" width={size} height={size} loading="lazy" decoding="async" className={`rounded-full object-cover ${className}`} style={{ width: size, height: size }} />
+      <Image
+        src={url}
+        alt=""
+        width={size}
+        height={size}
+        quality={60}
+        className={`shrink-0 rounded-full object-cover ${className}`}
+        style={{ width: size, height: size }}
+      />
     );
   }
   return (
