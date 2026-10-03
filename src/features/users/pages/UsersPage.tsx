@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import { FiSearch } from "react-icons/fi";
 import { useAppDispatch, useAppSelector } from "@/hooks/redux";
+import { avatarUrl } from "@/helpers/avatarHelper";
 import { asyncLoadUsers } from "../states/reducer";
 
 export default function UsersPage() {
@@ -33,8 +34,10 @@ export default function UsersPage() {
         {users.map((u) => (
           <div key={u.id} className="card flex items-center gap-4 p-4">
             <img
-              src={u.photo || `https://ui-avatars.com/api/?background=6366f1&color=fff&name=${encodeURIComponent(u.name)}`}
+              src={avatarUrl(u.photo, u.name, 96)}
               alt=""
+              width={48}
+              height={48}
               className="size-12 rounded-full object-cover"
             />
             <div className="min-w-0">

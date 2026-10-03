@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useAppSelector } from "@/hooks/redux";
+import { avatarUrl } from "@/helpers/avatarHelper";
 
 function MenuIcon() {
   return (
@@ -41,7 +42,7 @@ export default function NavbarComponent({ onMenu, onLogout }: { onMenu: () => vo
       <div className="flex items-center gap-3">
         <Link href="/profile" aria-label={me?.name ? `Profil ${me.name}` : "Profil saya"} className="flex items-center gap-2">
           <img
-            src={me?.photo || `https://ui-avatars.com/api/?background=6366f1&color=fff&size=72&name=${encodeURIComponent(me?.name || "U")}`}
+            src={avatarUrl(me?.photo, me?.name, 72)}
             alt=""
             width={36}
             height={36}

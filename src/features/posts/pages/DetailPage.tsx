@@ -5,6 +5,7 @@ import { useAppDispatch, useAppSelector } from "@/hooks/redux";
 import { asyncLoadPost } from "../states/reducer";
 import { addComment, changeCover, deleteComment, deletePost, toggleLike } from "../api/postApi";
 import { formatDate, showConfirmDialog, showErrorDialog } from "@/helpers/toolsHelper";
+import { avatarUrl } from "@/helpers/avatarHelper";
 import ChangeModal from "../modals/ChangeModal";
 
 type IconProps = SVGProps<SVGSVGElement> & {
@@ -115,7 +116,13 @@ export default function DetailPage() {
       <div className="space-y-5 p-6">
         <h1 className="sr-only">Detail postingan</h1>
         <div className="flex items-center gap-3">
-          <img src={post.author?.photo || `https://ui-avatars.com/api/?background=6366f1&color=fff&name=${encodeURIComponent(post.author?.name || "U")}`} alt="" className="size-10 rounded-full object-cover" />
+          <img
+            src={avatarUrl(post.author?.photo, post.author?.name, 80)}
+            alt=""
+            width={40}
+            height={40}
+            className="size-10 rounded-full object-cover"
+          />
           <div>
             <p className="font-semibold">{post.author?.name}</p>
             <p className="text-xs text-slate-600">{formatDate(post.created_at)}</p>

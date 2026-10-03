@@ -4,6 +4,7 @@ import useInput from "@/hooks/useInput";
 import { asyncLoadProfile } from "@/features/auth/states/reducer";
 import { changePassword, updateMe, uploadPhoto } from "../api/userApi";
 import { showErrorDialog, showSuccessDialog } from "@/helpers/toolsHelper";
+import { avatarUrl } from "@/helpers/avatarHelper";
 
 export default function ProfilePage() {
   const dispatch = useAppDispatch();
@@ -31,8 +32,10 @@ export default function ProfilePage() {
 
       <div className="card flex items-center gap-5 p-6">
         <img
-          src={me.photo || `https://ui-avatars.com/api/?background=6366f1&color=fff&size=128&name=${encodeURIComponent(me.name)}`}
+          src={avatarUrl(me.photo, me.name, 128)}
           alt=""
+          width={80}
+          height={80}
           className="size-20 rounded-full object-cover"
         />
         <label className="btn btn-ghost cursor-pointer focus-within:ring-4 focus-within:ring-indigo-100">
