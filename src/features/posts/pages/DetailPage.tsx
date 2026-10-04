@@ -1,14 +1,13 @@
 "use client";
 import { useEffect, useState, type SVGProps } from "react";
-import Image from "next/image";
 import { useParams, useRouter } from "next/navigation";
 import { useAppDispatch, useAppSelector } from "@/hooks/redux";
 import {
   asyncAddComment, asyncChangeCover, asyncDeleteComment, asyncDeletePost, asyncLoadPost, asyncToggleLike,
 } from "../states/reducer";
 import { formatDate, showConfirmDialog, showErrorDialog } from "@/helpers/toolsHelper";
-import { assetUrl } from "@/helpers/avatarHelper";
-import Avatar from "@/components/Avatar";
+import Image from "next/image";
+import { assetUrl, avatarUrl, skipOptimizer } from "@/helpers/avatarHelper";
 import ChangeModal from "../modals/ChangeModal";
 
 type IconProps = SVGProps<SVGSVGElement> & {
@@ -113,6 +112,7 @@ export default function DetailPage() {
   const mine = me?.id === post.user_id;
   const liked = post.likes?.some((l) => l.user_id === me?.id);
   const cover = assetUrl(post.cover);
+  const authorPhoto = avatarUrl(post.author?.photo, post.author?.name, 80);
 
   return (
     <article className="card mx-auto max-w-3xl overflow-hidden">
@@ -122,19 +122,26 @@ export default function DetailPage() {
           alt=""
           width={768}
           height={384}
-          sizes="(min-width: 1024px) 768px, 100vw"
-          quality={55}
+          sizes="(min-width: 768px) 768px, 100vw"
+          quality={70}
           priority
-          fetchPriority="high"
-          className="max-h-96 w-full border-b-2 border-ink object-cover"
+          unoptimized={skipOptimizer(cover)}
+          className="max-h-96 w-full object-cover"
         />
       ) : (
-        <div className="cover-empty h-48" />
+        <div className="h-48 bg-gradient-to-br from-indigo-200 via-violet-200 to-fuchsia-200" />
       )}
       <div className="space-y-5 p-6">
         <h1 className="sr-only">Detail postingan</h1>
         <div className="flex items-center gap-3">
-          <Avatar photo={post.author?.photo} name={post.author?.name} size={40} />
+          <Image
+            src={authorPhoto}
+            alt=""
+            width={40}
+            height={40}
+            unoptimized={skipOptimizer(authorPhoto)}
+            className="size-10 rounded-full object-cover"
+          />
           <div>
             <p className="font-semibold">{post.author?.name}</p>
             <p className="text-xs text-slate-600">{formatDate(post.created_at)}</p>

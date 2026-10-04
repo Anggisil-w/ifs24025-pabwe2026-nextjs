@@ -1,20 +1,15 @@
 "use client";
+import Image from "next/image";
 import { useAppDispatch, useAppSelector } from "@/hooks/redux";
 import useInput from "@/hooks/useInput";
 import { asyncLoadProfile } from "@/features/auth/states/reducer";
 import { changePassword, updateMe, uploadPhoto } from "../api/userApi";
 import { showErrorDialog, showSuccessDialog } from "@/helpers/toolsHelper";
-import Avatar from "@/components/Avatar";
-import type { User } from "@/types";
+import { avatarUrl, skipOptimizer } from "@/helpers/avatarHelper";
 
 export default function ProfilePage() {
-  const me = useAppSelector((s) => s.auth.profile);
-  // Form baru dipasang setelah profil tersedia agar nilai awal input terisi.
-  return me ? <ProfileForm me={me} /> : null;
-}
-
-function ProfileForm({ me }: { me: User }) {
   const dispatch = useAppDispatch();
+  const me = useAppSelector((s) => s.auth.profile);
   const [name, onName] = useInput(me?.name || "");
   const [email, onEmail] = useInput(me?.email || "");
   const [pass, onPass, setPass] = useInput();
@@ -30,12 +25,24 @@ function ProfileForm({ me }: { me: User }) {
     }
   };
 
+  if (!me) return null;
+
+  const photo = avatarUrl(me.photo, me.name, 128);
+
   return (
     <div className="mx-auto max-w-2xl space-y-6">
       <h1 className="text-2xl font-extrabold">Profil Saya</h1>
 
       <div className="card flex items-center gap-5 p-6">
-        <Avatar photo={me.photo} name={me.name} size={80} />
+        <Image
+          src={photo}
+          alt=""
+          width={80}
+          height={80}
+          priority
+          unoptimized={skipOptimizer(photo)}
+          className="size-20 rounded-full object-cover"
+        />
         <label className="btn btn-ghost cursor-pointer focus-within:ring-4 focus-within:ring-indigo-100">
           Ganti foto
           <input

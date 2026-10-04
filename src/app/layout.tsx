@@ -1,24 +1,19 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Plus_Jakarta_Sans } from "next/font/google";
+import "./globals.css";
 import Providers from "@/components/Providers";
-import "./globals.css"; // Gunakan path relative ./globals.css
 
-const inter = Inter({ subsets: ["latin"], display: "swap" });
+const font = Plus_Jakarta_Sans({ subsets: ["latin"], display: "swap" });
 
-export const metadata: Metadata = {
-  title: "DelcomFeed - Praktikum PABWE 2026",
-  description: "Aplikasi Publikasi & Diskusi Mahasiswa",
-  robots: { index: true, follow: true },
-};
+export const metadata: Metadata = { title: "Postingan", description: "Aplikasi Postingan Delcom" };
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="id">
-      <body className={inter.className}>
+      <head>
+        <link rel="preconnect" href="https://ui-avatars.com" />
+      </head>
+      <body className={font.className}>
         <Providers>{children}</Providers>
       </body>
     </html>

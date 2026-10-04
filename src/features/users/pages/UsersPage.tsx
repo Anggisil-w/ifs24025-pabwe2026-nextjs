@@ -1,7 +1,9 @@
 "use client";
 import { useEffect, useState } from "react";
+import Image from "next/image";
+import { FiSearch } from "react-icons/fi";
 import { useAppDispatch, useAppSelector } from "@/hooks/redux";
-import Avatar from "@/components/Avatar";
+import { avatarUrl, skipOptimizer } from "@/helpers/avatarHelper";
 import { asyncLoadUsers } from "../states/reducer";
 
 export default function UsersPage() {
@@ -10,8 +12,7 @@ export default function UsersPage() {
   const [q, setQ] = useState("");
 
   useEffect(() => {
-    // Muat awal (q kosong) langsung tanpa jeda; debounce 300ms hanya saat mengetik pencarian.
-    const t = setTimeout(() => dispatch(asyncLoadUsers(q || undefined)), q ? 300 : 0);
+    const t = setTimeout(() => dispatch(asyncLoadUsers(q || undefined)), 300);
     return () => clearTimeout(t);
   }, [q, dispatch]);
 
@@ -19,7 +20,7 @@ export default function UsersPage() {
     <div className="space-y-5">
       <h1 className="text-2xl font-extrabold">Daftar Pengguna</h1>
       <div className="relative max-w-md">
-        <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="absolute left-3 top-3.5 h-4 w-4 text-slate-600"><circle cx="11" cy="11" r="7" /><path d="m20 20-4-4" /></svg>
+        <FiSearch aria-hidden="true" className="absolute left-3 top-3.5 text-slate-600" />
         <input
           id="search-user-input"
           name="search"
@@ -32,9 +33,17 @@ export default function UsersPage() {
       </div>
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
         {users.map((u) => {
+          const src = avatarUrl(u.photo, u.name, 96);
           return (
             <div key={u.id} className="card flex items-center gap-4 p-4">
-              <Avatar photo={u.photo} name={u.name} size={48} />
+              <Image
+                src={src}
+                alt=""
+                width={48}
+                height={48}
+                unoptimized={skipOptimizer(src)}
+                className="size-12 rounded-full object-cover"
+              />
               <div className="min-w-0">
                 <p className="truncate font-semibold">{u.name}</p>
                 <p className="truncate text-sm text-slate-600">{u.email}</p>

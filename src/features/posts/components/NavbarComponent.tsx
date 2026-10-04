@@ -1,8 +1,9 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { useAppSelector } from "@/hooks/redux";
-import Avatar from "@/components/Avatar";
+import { avatarUrl, skipOptimizer } from "@/helpers/avatarHelper";
 
 function MenuIcon() {
   return (
@@ -24,27 +25,32 @@ function LogoutIcon() {
 
 export default function NavbarComponent({ onMenu, onLogout }: { onMenu: () => void; onLogout: () => void }) {
   const me = useAppSelector((s) => s.auth.profile);
+  const photo = avatarUrl(me?.photo, me?.name, 72);
 
   return (
-    <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b-2 border-ink bg-paper/90 px-4 backdrop-blur lg:px-8">
+    <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b border-slate-100 bg-white/80 px-4 backdrop-blur lg:px-8">
       <div className="flex items-center gap-3">
         <button
-          className="inline-flex size-10 items-center justify-center rounded-lg border-2 border-ink bg-white lg:hidden"
+          className="inline-flex size-10 items-center justify-center rounded-xl lg:hidden"
           onClick={onMenu}
           aria-label="Buka menu"
         >
           <MenuIcon />
         </button>
-        <span className="flex items-center gap-2.5 text-xl font-extrabold tracking-tight">
-          <span aria-hidden="true" className="grid size-9 place-items-center rounded-lg border-2 border-ink bg-signal" style={{ boxShadow: "2px 2px 0 var(--color-ink)" }}>
-            <svg viewBox="0 0 24 24" className="h-5 w-5" fill="currentColor"><path d="M5 4h14a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-6l-5 4v-4H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2Z" /></svg>
-          </span>
-          Postingan
+        <span className="bg-gradient-to-r from-indigo-600 to-violet-600 bg-clip-text text-xl font-extrabold text-transparent">
+          ✦ Postingan
         </span>
       </div>
       <div className="flex items-center gap-3">
         <Link href="/profile" aria-label={me?.name ? `Profil ${me.name}` : "Profil saya"} className="flex items-center gap-2">
-          <Avatar photo={me?.photo} name={me?.name} size={36} className="border-2 border-ink" />
+          <Image
+            src={photo}
+            alt=""
+            width={36}
+            height={36}
+            unoptimized={skipOptimizer(photo)}
+            className="size-9 rounded-full object-cover"
+          />
           <span className="hidden text-sm font-semibold sm:block">{me?.name}</span>
         </Link>
         <button onClick={onLogout} className="btn btn-ghost !px-3" aria-label="Keluar">

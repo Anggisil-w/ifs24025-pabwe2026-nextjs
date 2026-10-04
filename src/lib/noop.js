@@ -1,2 +1,2 @@
-// Polyfill bawaan Next.js tidak diperlukan oleh browser modern (lihat browserslist di package.json)
+// Polyfill bawaan Next.js tidak dibutuhkan browser modern (lihat "browserslist" di package.json).
 export {};
