@@ -28,7 +28,7 @@ export default function Avatar({ photo, name, size, className = "" }: Props) {
   return (
     <span
       aria-hidden="true"
-      className={`inline-flex shrink-0 select-none items-center justify-center rounded-full bg-indigo-600 font-bold text-white ${className}`}
+      className={`inline-flex shrink-0 select-none items-center justify-center rounded-full bg-ink font-bold text-signal ${className}`}
       style={{ width: size, height: size, fontSize: Math.round(size * 0.38) }}
     >
       {initials(name)}

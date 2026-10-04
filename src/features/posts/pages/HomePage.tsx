@@ -78,7 +78,7 @@ export default function HomePage() {
 {list.map((p, i) => {
   const cover = assetUrl(p.cover);
   return (
-    <Link key={p.id} href={`/posts/${p.id}`} className="card group overflow-hidden transition hover:-translate-y-1 hover:shadow-xl">
+    <Link key={p.id} href={`/posts/${p.id}`} className="card note group overflow-hidden">
       {cover ? (
         <Image
           src={cover}
@@ -89,10 +89,10 @@ export default function HomePage() {
           quality={70}
           priority={i === 0}
           loading={i === 0 ? undefined : "lazy"}
-          className="h-44 w-full object-cover"
+          className="h-44 w-full border-b-2 border-ink object-cover"
         />
       ) : (
-        <div className="h-44 bg-gradient-to-br from-indigo-200 via-violet-200 to-fuchsia-200" />
+        <div className="cover-empty h-44" />
       )}
       <div className="space-y-2 p-4">
         <p className="text-sm font-semibold text-indigo-600">{p.author?.name}</p>

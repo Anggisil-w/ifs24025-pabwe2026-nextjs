@@ -123,10 +123,10 @@ export default function DetailPage() {
           height={384}
           fetchPriority="high"
           decoding="async"
-          className="max-h-96 w-full object-cover"
+          className="max-h-96 w-full border-b-2 border-ink object-cover"
         />
       ) : (
-        <div className="h-48 bg-gradient-to-br from-indigo-200 via-violet-200 to-fuchsia-200" />
+        <div className="cover-empty h-48" />
       )}
       <div className="space-y-5 p-6">
         <h1 className="sr-only">Detail postingan</h1>
