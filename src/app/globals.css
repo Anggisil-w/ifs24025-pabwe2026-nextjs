@@ -31,6 +31,7 @@ html {
 }
 
 body {
+  font-family: "Trebuchet MS", "Segoe UI", system-ui, sans-serif;
   background-color: var(--color-paper);
   background-image: radial-gradient(rgb(18 24 58 / 0.09) 1px, transparent 1px);
   background-size: 22px 22px;

@@ -17,7 +17,7 @@ const nextConfig: NextConfig = {
   turbopack: {}, // webpack di atas hanya dipakai build webpack; ini mencegah error bila Next memakai Turbopack
   reactStrictMode: true,
   compress: true,
-  productionBrowserSourceMaps: true,
+  productionBrowserSourceMaps: false,
   images: {
     formats: ["image/webp"],
     remotePatterns: [
