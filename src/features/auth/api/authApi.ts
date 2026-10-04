@@ -1,20 +1,3 @@
-import { fetchApi } from "@/helpers/apiHelper";
-
-export const authApi = {
-  login: (credentials: Record<string, string>) =>
-    fetchApi("/auth/login", {
-      method: "POST",
-      body: JSON.stringify(credentials),
-    }),
-
-  register: (payload: Record<string, string>) =>
-    fetchApi("/auth/register", {
-      method: "POST",
-      body: JSON.stringify(payload),
-    }),
-
-  getMe: () => fetchApi("/users/me"),
-
-  /** Cadangan bila backend menyediakan endpoint /auth/me */
-  getMeLegacy: () => fetchApi("/auth/me"),
-};
+import { api } from "@/helpers/apiHelper";
+export const login = (email: string, password: string) => api<{ token: string }>("/auth/login", { method: "POST", body: { email, password }, auth: false });
+export const register = (name: string, email: string, password: string) => api("/auth/register", { method: "POST", body: { name, email, password }, auth: false });

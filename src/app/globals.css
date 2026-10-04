@@ -1,13 +1,107 @@
 @import "tailwindcss";
 
-@layer base {
-  body {
-    @apply bg-slate-900 text-slate-100 min-h-screen font-sans antialiased;
+/*
+  Tema "Papan Pengumuman": navy tinta, kertas biru muda, dan kuning stabilo.
+  Warna bawaan Tailwind (indigo/slate/red) dipetakan ulang di sini agar seluruh
+  halaman ikut berubah tanpa mengubah logika komponen.
+*/
+@theme {
+  --color-ink: #12183a;
+  --color-paper: #e9eef5;
+  --color-signal: #ffd23f;
+  --color-signal-soft: #fff1b3;
+
+  --color-indigo-50: #eef1ff;
+  --color-indigo-100: #dce3ff;
+  --color-indigo-200: #b9c6ff;
+  --color-indigo-600: #2b50ff;
+  --color-indigo-700: #1f3bd1;
+
+  --color-slate-50: #f3f6fb;
+  --color-slate-100: #e3e9f3;
+  --color-slate-200: #cbd3e3;
+  --color-slate-600: #3e4668;
+  --color-slate-700: #2a3052;
+
+  --color-red-600: #c42b16;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: var(--color-paper);
+  background-image: radial-gradient(rgb(18 24 58 / 0.09) 1px, transparent 1px);
+  background-size: 22px 22px;
+  color: var(--color-ink);
+  letter-spacing: -0.005em;
+}
+
+h1, h2, h3 {
+  letter-spacing: -0.025em;
+}
+
+::selection {
+  background: var(--color-signal);
+  color: var(--color-ink);
+}
+
+:focus-visible {
+  outline: 3px solid var(--color-indigo-600);
+  outline-offset: 3px;
+}
+
+@layer components {
+  .btn {
+    @apply inline-flex cursor-pointer items-center justify-center gap-2 rounded-lg border-2 border-ink px-4 py-2 text-sm font-bold transition duration-150 disabled:cursor-not-allowed disabled:opacity-50;
+    box-shadow: 3px 3px 0 var(--color-ink);
+  }
+  .btn:hover:not(:disabled) {
+    transform: translate(-1px, -1px);
+    box-shadow: 4px 4px 0 var(--color-ink);
+  }
+  .btn:active:not(:disabled) {
+    transform: translate(2px, 2px);
+    box-shadow: 1px 1px 0 var(--color-ink);
+  }
+  .btn-primary {
+    @apply bg-signal text-ink;
+  }
+  .btn-ghost {
+    @apply bg-white text-ink;
+  }
+  .input {
+    @apply w-full rounded-lg border-2 border-ink bg-white px-4 py-2.5 text-sm text-ink outline-none transition placeholder:text-slate-600/70;
+  }
+  .input:focus {
+    box-shadow: 4px 4px 0 var(--color-signal);
+  }
+  .card {
+    @apply rounded-xl border-2 border-ink bg-white;
+    box-shadow: 5px 5px 0 var(--color-ink);
+  }
+  /* Kartu postingan: terangkat saat disorot, seperti kertas yang ditempel di papan. */
+  .note {
+    @apply transition duration-150;
+  }
+  .note:hover {
+    transform: translate(-3px, -3px);
+    box-shadow: 8px 8px 0 var(--color-ink);
+  }
+  /* Penutup untuk postingan tanpa cover. */
+  .cover-empty {
+    background-color: var(--color-signal-soft);
+    background-image:
+      linear-gradient(135deg, transparent 0 46%, rgb(18 24 58 / 0.14) 46% 54%, transparent 54% 100%),
+      radial-gradient(rgb(18 24 58 / 0.18) 1.5px, transparent 1.5px);
+    background-size: 28px 28px, 14px 14px;
+    border-bottom: 2px solid var(--color-ink);
   }
 }
 
-.glass-panel {
-  background: rgba(30, 41, 59, 0.7);
-  backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .btn, .note, .input { transition: none; }
+  .btn:hover:not(:disabled), .btn:active:not(:disabled), .note:hover { transform: none; }
 }

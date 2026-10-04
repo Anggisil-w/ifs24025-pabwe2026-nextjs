@@ -1,9 +1,8 @@
 "use client";
 import { useEffect, useState } from "react";
-import Image from "next/image";
 import { FiSearch } from "react-icons/fi";
 import { useAppDispatch, useAppSelector } from "@/hooks/redux";
-import { avatarUrl, skipOptimizer } from "@/helpers/avatarHelper";
+import Avatar from "@/components/Avatar";
 import { asyncLoadUsers } from "../states/reducer";
 
 export default function UsersPage() {
@@ -12,7 +11,8 @@ export default function UsersPage() {
   const [q, setQ] = useState("");
 
   useEffect(() => {
-    const t = setTimeout(() => dispatch(asyncLoadUsers(q || undefined)), 300);
+    // Muat awal (q kosong) langsung tanpa jeda; debounce 300ms hanya saat mengetik pencarian.
+    const t = setTimeout(() => dispatch(asyncLoadUsers(q || undefined)), q ? 300 : 0);
     return () => clearTimeout(t);
   }, [q, dispatch]);
 
@@ -33,17 +33,9 @@ export default function UsersPage() {
       </div>
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
         {users.map((u) => {
-          const src = avatarUrl(u.photo, u.name, 96);
           return (
             <div key={u.id} className="card flex items-center gap-4 p-4">
-              <Image
-                src={src}
-                alt=""
-                width={48}
-                height={48}
-                unoptimized={skipOptimizer(src)}
-                className="size-12 rounded-full object-cover"
-              />
+              <Avatar photo={u.photo} name={u.name} size={48} />
               <div className="min-w-0">
                 <p className="truncate font-semibold">{u.name}</p>
                 <p className="truncate text-sm text-slate-600">{u.email}</p>
