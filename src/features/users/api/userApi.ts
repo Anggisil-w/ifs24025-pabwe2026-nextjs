@@ -1,6 +1,20 @@
-import { api } from "@/helpers/apiHelper";
-import type { User } from "@/types";
-export const getUsers = (search?: string) => api<{ users: User[] }>("/users", { query: { search } });
-export const updateMe = (name: string, email: string) => api("/users/me", { method: "PUT", body: { name, email } });
-export const uploadPhoto = (file: File) => { const f = new FormData(); f.append("photo", file); return api("/users/me/photo", { method: "POST", body: f }); };
-export const changePassword = (password: string, new_password: string) => api("/users/me/password", { method: "PUT", body: { password, new_password } });
+import { fetchApi } from "@/helpers/apiHelper";
+
+export const getUserProfile = async (): Promise<unknown> => fetchApi("/users/me");
+
+export const getUsers = async (): Promise<unknown> => fetchApi("/users");
+
+export const updateProfile = async (payload: { name: string; bio: string }): Promise<unknown> =>
+  fetchApi("/users/me", {
+    method: "PATCH",
+    body: JSON.stringify(payload),
+  });
+
+export const updatePassword = async (payload: {
+  old_password: string;
+  new_password: string;
+}): Promise<unknown> =>
+  fetchApi("/users/password", {
+    method: "PATCH",
+    body: JSON.stringify(payload),
+  });

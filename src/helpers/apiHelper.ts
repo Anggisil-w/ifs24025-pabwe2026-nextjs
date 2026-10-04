@@ -1,28 +1,84 @@
-import { DELCOM_BASEURL, API_PROXY_PATH } from "@/lib/config";
+import { API_BASE_URL } from "@/lib/config";
 
-export const getAccessToken = () => (typeof window === "undefined" ? null : localStorage.getItem("token"));
-export const putAccessToken = (t: string) => localStorage.setItem("token", t);
-export const removeAccessToken = () => localStorage.removeItem("token");
+export class ApiError extends Error {
+  status: number;
 
-type Opt = { method?: string; body?: unknown; query?: Record<string, string | number | undefined>; auth?: boolean };
-
-export async function api<T = unknown>(path: string, { method = "GET", body, query, auth = true }: Opt = {}): Promise<T> {
-  const isBrowser = typeof window !== "undefined";
-  const base = isBrowser ? API_PROXY_PATH : DELCOM_BASEURL;
-  const url = new URL(base + path, isBrowser ? window.location.origin : undefined);
-  Object.entries(query || {}).forEach(([k, v]) => v !== undefined && url.searchParams.set(k, String(v)));
-
-  const headers: Record<string, string> = {};
-  const t = getAccessToken();
-  if (auth && t) headers.Authorization = `Bearer ${t}`;
-
-  let b: BodyInit | undefined;
-  if (body instanceof FormData) b = body;
-  else if (body) { headers["Content-Type"] = "application/json"; b = JSON.stringify(body); }
-
-  const res = await fetch(url, { method, headers, body: b });
-  const json = await res.json();
-  const failed = !res.ok || json.success === false || json.status === "fail" || json.status === "error";
-  if (failed) throw new Error(json.message || "Terjadi kesalahan");
-  return json.data as T;
+  constructor(message: string, status: number) {
+    super(message);
+    this.name = "ApiError";
+    this.status = status;
+  }
 }
+
+export const getToken = (): string | null => {
+  if (typeof window !== "undefined") {
+    return localStorage.getItem("token");
+  }
+  return null;
+};
+
+export const setToken = (token: string): void => {
+  if (typeof window !== "undefined") {
+    localStorage.setItem("token", token);
+  }
+};
+
+export const removeToken = (): void => {
+  if (typeof window !== "undefined") {
+    localStorage.removeItem("token");
+  }
+};
+
+/**
+ * Respons API biasanya dibungkus { success, message, data: {...} }.
+ * Fungsi ini mengambil isi `data` bila ada, dan jika tidak ada mengembalikan respons apa adanya.
+ */
+export const unwrapData = <T>(res: unknown): T => {
+  if (res && typeof res === "object" && "data" in res) {
+    const inner = (res as { data?: unknown }).data;
+    if (inner !== undefined && inner !== null) return inner as T;
+  }
+  return res as T;
+};
+
+/** Mengambil entitas dari respons, mis. pickEntity(res, "post") untuk { data: { post } } atau { post }. */
+export const pickEntity = <T>(res: unknown, key: string): T => {
+  const data = unwrapData<Record<string, unknown>>(res);
+  if (data && typeof data === "object" && key in data) {
+    return data[key] as T;
+  }
+  return data as unknown as T;
+};
+
+export const fetchApi = async <T = unknown>(
+  endpoint: string,
+  options: RequestInit = {}
+): Promise<T> => {
+  const token = getToken();
+  const isFormData = typeof FormData !== "undefined" && options.body instanceof FormData;
+
+  const headers: HeadersInit = {
+    ...(isFormData ? {} : { "Content-Type": "application/json" }),
+    ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    ...(options.headers || {}),
+  };
+
+  const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+    ...options,
+    headers,
+  });
+
+  // Respons bisa kosong / bukan JSON (mis. 204 atau error gateway)
+  const data = await response.json().catch(() => ({}));
+
+  if (!response.ok) {
+    throw new ApiError(
+      (data as { message?: string }).message || "Terjadi kesalahan pada server",
+      response.status
+    );
+  }
+
+  return data as T;
+};
+
+export const apiFetch = fetchApi;

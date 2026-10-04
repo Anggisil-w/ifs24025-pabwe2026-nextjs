@@ -1,12 +1,25 @@
-import { api } from "@/helpers/apiHelper";
-import type { Post } from "@/types";
-export const getPosts = (isMe = false) => api<{ posts: Post[] }>("/posts", { query: { is_me: isMe ? 1 : undefined } });
-export const getPost = (id: string) => api<{ post: Post }>(`/posts/${id}`);
-export const addPost = (description: string) => api("/posts", { method: "POST", body: { description } });
-export const changePost = (id: string, description: string) => api(`/posts/${id}`, { method: "PUT", body: { description } });
-export const changeCover = (id: string, file: File) => { const f = new FormData(); f.append("cover", file); return api(`/posts/${id}/cover`, { method: "POST", body: f }); };
-export const deletePost = (id: string) => api(`/posts/${id}`, { method: "DELETE" });
-export const toggleLike = (id: string) => api(`/posts/${id}/likes`, { method: "POST" });
-export const addComment = (id: string, comment: string) => api(`/posts/${id}/comments`, { method: "POST", body: { comment } });
-export const deleteComment = (id: string, comment_id: string) => api(`/posts/${id}/comments`, { method: "DELETE", body: { comment_id } });
-export const deleteAllPosts = () => api("/posts", { method: "DELETE" });
+import { fetchApi } from "@/helpers/apiHelper";
+
+export const postApi = {
+  getAll: () => fetchApi("/posts"),
+  getById: (id: string | number) => fetchApi(`/posts/${id}`),
+  create: (data: { title: string; content: string }) =>
+    fetchApi("/posts", {
+      method: "POST",
+      body: JSON.stringify(data),
+    }),
+  update: (id: string | number, data: { title: string; content: string }) =>
+    fetchApi(`/posts/${id}`, {
+      method: "PUT",
+      body: JSON.stringify(data),
+    }),
+  delete: (id: string | number) =>
+    fetchApi(`/posts/${id}`, {
+      method: "DELETE",
+    }),
+  updateCover: (id: string | number, coverUrl: string) =>
+    fetchApi(`/posts/${id}/cover`, {
+      method: "PATCH",
+      body: JSON.stringify({ cover: coverUrl }),
+    }),
+};
