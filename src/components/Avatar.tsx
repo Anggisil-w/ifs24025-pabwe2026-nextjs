@@ -19,7 +19,7 @@ export default function Avatar({ photo, name, size, className = "" }: Props) {
         alt=""
         width={size}
         height={size}
-        quality={60}
+        quality={50}
         className={`shrink-0 rounded-full object-cover ${className}`}
         style={{ width: size, height: size }}
       />

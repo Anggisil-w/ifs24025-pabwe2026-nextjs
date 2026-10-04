@@ -20,6 +20,9 @@ const nextConfig: NextConfig = {
   productionBrowserSourceMaps: false,
   images: {
     formats: ["image/webp"],
+    deviceSizes: [320, 384, 480, 640, 768, 1024],
+    imageSizes: [36, 40, 48, 64, 96, 128],
+    minimumCacheTTL: 31536000,
     remotePatterns: [
       { protocol: "https", hostname: "open-api.delcom.org", pathname: "/**" },
       { protocol: "https", hostname: "ui-avatars.com", pathname: "/**" },

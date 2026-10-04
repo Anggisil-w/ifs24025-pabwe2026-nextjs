@@ -74,7 +74,7 @@ export default function HomePage() {
       </div>
       {isPost && <p className="text-slate-600">Memuat...</p>}
       {!isPost && list.length === 0 && <div className="card p-10 text-center text-slate-600">Belum ada postingan.</div>}
-      <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
+      <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3" style={{ contentVisibility: "auto", containIntrinsicSize: "1px 600px" }}>
 {list.map((p, i) => {
   const cover = assetUrl(p.cover);
   return (
@@ -85,10 +85,10 @@ export default function HomePage() {
           alt=""
           width={640}
           height={352}
-          sizes="(min-width: 1280px) 33vw, (min-width: 640px) 50vw, 100vw"
-          quality={70}
+          sizes="(min-width: 1280px) 320px, (min-width: 640px) 50vw, 100vw"
+          quality={55}
           priority={i === 0}
-          loading={i === 0 ? undefined : "lazy"}
+          fetchPriority={i === 0 ? "high" : "low"}
           className="h-44 w-full border-b-2 border-ink object-cover"
         />
       ) : (

@@ -123,8 +123,9 @@ export default function DetailPage() {
           width={768}
           height={384}
           sizes="(min-width: 1024px) 768px, 100vw"
-          quality={70}
+          quality={55}
           priority
+          fetchPriority="high"
           className="max-h-96 w-full border-b-2 border-ink object-cover"
         />
       ) : (
