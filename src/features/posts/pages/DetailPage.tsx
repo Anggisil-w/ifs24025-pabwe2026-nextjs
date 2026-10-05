@@ -124,7 +124,7 @@ export default function DetailPage() {
           height={384}
           priority
           sizes="(min-width: 1024px) 768px, calc(100vw - 32px)"
-          quality={55}
+          quality={60}
           className="max-h-96 w-full border-b-2 border-ink object-cover"
         />
       ) : (

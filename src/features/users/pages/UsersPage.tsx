@@ -1,6 +1,5 @@
 "use client";
 import { useEffect, useState } from "react";
-import { FiSearch } from "react-icons/fi";
 import { useAppDispatch, useAppSelector } from "@/hooks/redux";
 import Avatar from "@/components/Avatar";
 import { asyncLoadUsers } from "../states/reducer";
@@ -20,7 +19,10 @@ export default function UsersPage() {
     <div className="space-y-5">
       <h1 className="text-2xl font-extrabold">Daftar Pengguna</h1>
       <div className="relative max-w-md">
-        <FiSearch aria-hidden="true" className="absolute left-3 top-3.5 text-slate-600" />
+        <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="absolute left-3 top-3.5 h-4 w-4 text-slate-600">
+          <circle cx="11" cy="11" r="6" />
+          <path d="m16 16 4 4" />
+        </svg>
         <input
           id="search-user-input"
           name="search"

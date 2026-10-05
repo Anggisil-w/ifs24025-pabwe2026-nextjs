@@ -1,6 +1,6 @@
 "use client";
 import { Suspense, useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useAppDispatch, useAppSelector } from "@/hooks/redux";
 import { getAccessToken } from "@/helpers/apiHelper";
 import { asyncLoadProfile, isAuthLogout } from "@/features/auth/states/reducer";
@@ -10,15 +10,36 @@ import SidebarComponent from "../components/SidebarComponent";
 
 export default function PostLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
+  const pathname = usePathname();
   const dispatch = useAppDispatch();
   const { profile, isProfile } = useAppSelector((s) => s.auth);
   const [open, setOpen] = useState(false);
   // Token ada -> tampilkan shell + konten segera; profil dimuat paralel dengan data halaman
   // (sebelumnya halaman menunggu profil selesai dulu, sehingga request berurutan / waterfall).
   useEffect(() => {
-    if (!getAccessToken()) router.replace("/auth/login");
-    else dispatch(asyncLoadProfile());
-  }, [dispatch, router]);
+    if (!getAccessToken()) {
+      router.replace("/auth/login");
+      return;
+    }
+
+    // The profile is not required to render the first viewport on most pages.
+    // Loading it immediately competed with the page's primary API request
+    // (posts/users), which made Lighthouse's network critical path longer.
+    // Profile itself still loads immediately because that page needs the data.
+    if (pathname === "/profile") {
+      dispatch(asyncLoadProfile());
+      return;
+    }
+
+    const load = () => dispatch(asyncLoadProfile());
+    const idle = window.requestIdleCallback?.(load, { timeout: 2000 });
+    const timer = idle === undefined ? window.setTimeout(load, 1200) : undefined;
+
+    return () => {
+      if (idle !== undefined) window.cancelIdleCallback?.(idle);
+      if (timer !== undefined) window.clearTimeout(timer);
+    };
+  }, [dispatch, pathname, router]);
 
   useEffect(() => {
     if (isProfile && !profile) router.replace("/auth/login");
