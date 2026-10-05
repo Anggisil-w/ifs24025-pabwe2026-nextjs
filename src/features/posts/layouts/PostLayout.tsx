@@ -1,5 +1,5 @@
 "use client";
-import { Suspense, useEffect, useState, useSyncExternalStore } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAppDispatch, useAppSelector } from "@/hooks/redux";
 import { getAccessToken } from "@/helpers/apiHelper";
@@ -8,19 +8,11 @@ import { showConfirmDialog } from "@/helpers/toolsHelper";
 import NavbarComponent from "../components/NavbarComponent";
 import SidebarComponent from "../components/SidebarComponent";
 
-const subscribeToken = (cb: () => void) => {
-  window.addEventListener("storage", cb);
-  return () => window.removeEventListener("storage", cb);
-};
-
 export default function PostLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const dispatch = useAppDispatch();
   const { profile, isProfile } = useAppSelector((s) => s.auth);
   const [open, setOpen] = useState(false);
-  // Baca token dari localStorage tanpa setState di dalam effect (server snapshot = false, aman untuk hydration).
-  const hasToken = useSyncExternalStore(subscribeToken, () => !!getAccessToken(), () => false);
-
   // Token ada -> tampilkan shell + konten segera; profil dimuat paralel dengan data halaman
   // (sebelumnya halaman menunggu profil selesai dulu, sehingga request berurutan / waterfall).
   useEffect(() => {
@@ -39,15 +31,10 @@ export default function PostLayout({ children }: { children: React.ReactNode }) 
     }
   };
 
-  if (!profile && !hasToken) {
-    return (
-      <main className="grid min-h-screen place-items-center text-slate-600">
-        <h1 className="sr-only">Memuat</h1>
-        Memuat...
-      </main>
-    );
-  }
-
+  // localStorage is unavailable during SSR, so `hasToken` is false on the
+  // server even for an already-authenticated browser. Do not replace the
+  // whole page with a loading screen: rendering the shell immediately gives
+  // Lighthouse a real LCP candidate while the client validates the session.
   return (
     <div className="min-h-screen">
       <NavbarComponent onMenu={() => setOpen(true)} onLogout={logout} />

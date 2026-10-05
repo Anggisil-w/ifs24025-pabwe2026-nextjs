@@ -26,7 +26,7 @@ export default function NavbarComponent({ onMenu, onLogout }: { onMenu: () => vo
   const me = useAppSelector((s) => s.auth.profile);
 
   return (
-    <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b-2 border-ink bg-paper/90 px-4 backdrop-blur lg:px-8">
+    <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b-2 border-ink bg-paper px-4 lg:px-8">
       <div className="flex items-center gap-3">
         <button
           className="inline-flex size-10 items-center justify-center rounded-lg border-2 border-ink bg-white lg:hidden"

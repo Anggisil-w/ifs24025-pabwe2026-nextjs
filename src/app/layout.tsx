@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
-import { Bricolage_Grotesque } from "next/font/google";
+import { Inter } from "next/font/google";
 import "./globals.css";
 
-const font = Bricolage_Grotesque({ subsets: ["latin"] });
+const font = Inter({ subsets: ["latin"], display: "swap" });
 
 export const metadata: Metadata = { title: "Postingan", description: "Aplikasi Postingan Delcom" };
 

@@ -16,8 +16,8 @@ const nextConfig: NextConfig = {
   },
   turbopack: {}, // webpack di atas hanya dipakai build webpack; ini mencegah error bila Next memakai Turbopack
   reactStrictMode: true,
+  poweredByHeader: false,
   compress: true,
-  productionBrowserSourceMaps: true,
   images: {
     formats: ["image/webp"],
     remotePatterns: [
@@ -28,6 +28,14 @@ const nextConfig: NextConfig = {
   experimental: { inlineCss: true },
   async rewrites() {
     return [{ source: "/delcom-proxy/:path*", destination: `${API}/:path*` }];
+  },
+  async headers() {
+    return [
+      {
+        source: "/((?!delcom-proxy).*)",
+        headers: [{ key: "X-Robots-Tag", value: "index, follow" }],
+      },
+    ];
   },
 };
 
