@@ -19,7 +19,7 @@ const nextConfig: NextConfig = {
   poweredByHeader: false,
   compress: true,
   images: {
-    formats: ["image/webp"],
+    formats: ["image/avif", "image/webp"],
     remotePatterns: [
       { protocol: "https", hostname: "open-api.delcom.org", pathname: "/**" },
       { protocol: "https", hostname: "ui-avatars.com", pathname: "/**" },

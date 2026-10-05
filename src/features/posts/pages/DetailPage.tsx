@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState, type SVGProps } from "react";
+import Image from "next/image";
 import { useParams, useRouter } from "next/navigation";
 import { useAppDispatch, useAppSelector } from "@/hooks/redux";
 import {
@@ -116,13 +117,14 @@ export default function DetailPage() {
   return (
     <article className="card mx-auto max-w-3xl overflow-hidden">
       {cover ? (
-        <img
+        <Image
           src={cover}
           alt=""
           width={768}
           height={384}
-          fetchPriority="high"
-          decoding="async"
+          priority
+          sizes="(min-width: 1024px) 768px, calc(100vw - 32px)"
+          quality={60}
           className="max-h-96 w-full border-b-2 border-ink object-cover"
         />
       ) : (
