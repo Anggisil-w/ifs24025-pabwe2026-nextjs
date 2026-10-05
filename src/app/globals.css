@@ -82,6 +82,8 @@ h1, h2, h3 {
   /* Kartu postingan: terangkat saat disorot, seperti kertas yang ditempel di papan. */
   .note {
     @apply transition duration-150;
+    content-visibility: auto;
+    contain-intrinsic-size: 0 360px;
   }
   .note:hover {
     transform: translate(-3px, -3px);
