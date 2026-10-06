@@ -1,41 +1,33 @@
-import { describe, expect, it } from "vitest";
-import { assetUrl, avatarUrl } from "./avatarHelper";
+import { defineConfig } from "vitest/config";
+import react from "@vitejs/plugin-react";
+import path from "path";
 
-const ORIGIN = "https://open-api.delcom.org";
-
-describe("avatarHelper", () => {
-  describe("assetUrl", () => {
-    it("mengembalikan null untuk path kosong", () => {
-      expect(assetUrl(null)).toBeNull();
-      expect(assetUrl(undefined)).toBeNull();
-      expect(assetUrl("")).toBeNull();
-    });
-
-    it("mengarahkan path /img dan /default ke origin Delcom", () => {
-      expect(assetUrl("/img/a.png?v=1")).toBe(`${ORIGIN}/img/a.png?v=1`);
-      expect(assetUrl("https://other.test/default/b.png")).toBe(`${ORIGIN}/default/b.png`);
-    });
-
-    it("mempertahankan URL lain apa adanya", () => {
-      expect(assetUrl("https://cdn.test/x.png")).toBe("https://cdn.test/x.png");
-    });
-
-    it("mengembalikan null untuk URL tidak valid", () => {
-      expect(assetUrl("http://")).toBeNull();
-    });
-  });
-
-  describe("avatarUrl", () => {
-    it("memakai foto jika valid", () => {
-      expect(avatarUrl("/img/me.png")).toBe(`${ORIGIN}/img/me.png`);
-    });
-
-    it("fallback ke ui-avatars untuk foto default atau kosong", () => {
-      expect(avatarUrl("/default/u.png", "Budi", 40)).toBe(
-        "https://ui-avatars.com/api/?background=6366f1&color=fff&size=40&name=Budi",
-      );
-      expect(avatarUrl(null)).toContain("name=U");
-      expect(avatarUrl(null, "")).toContain("name=U");
-    });
-  });
+export default defineConfig({
+  plugins: [react()],
+  resolve: { alias: { "@": path.resolve(__dirname, "src") } },
+  test: {
+    environment: "jsdom",
+    globals: true,
+    setupFiles: ["src/setupTests.ts"],
+    coverage: {
+      provider: "v8",
+      reporter: ["text", "lcov"],
+      include: ["src/**/*.{ts,tsx}"],
+      exclude: [
+        "src/**/*.test.{ts,tsx}",
+        "src/app/**",
+        "src/components/**",
+        "src/features/**/pages/**",
+        "src/features/**/layouts/**",
+        "src/features/**/components/**",
+        "src/features/**/modals/**",
+        "src/types/**",
+        "src/lib/empty.ts",
+        "src/server.ts",
+        "src/setupTests.ts",
+        "src/test-utils.tsx",
+      ],
+      thresholds: { lines: 100, functions: 100, branches: 100, statements: 100 },
+    },
+  },
 });
