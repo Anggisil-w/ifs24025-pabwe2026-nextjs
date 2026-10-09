@@ -32,11 +32,13 @@ export default function PostLayout({ children }: Readonly<{ children: React.Reac
     }
 
     const load = () => dispatch(asyncLoadProfile());
-    const idle = globalThis.requestIdleCallback?.(load, { timeout: 2000 });
+    // requestIdleCallback tidak ada di semua browser (mis. Safari): tipe aslinya selalu ada, jadi dibuat opsional.
+    const idleApi: Partial<Pick<typeof globalThis, "requestIdleCallback" | "cancelIdleCallback">> = globalThis;
+    const idle = idleApi.requestIdleCallback?.(load, { timeout: 2000 });
     const timer = idle === undefined ? globalThis.setTimeout(load, 1200) : undefined;
 
     return () => {
-      if (idle !== undefined) globalThis.cancelIdleCallback?.(idle);
+      if (idle !== undefined) idleApi.cancelIdleCallback?.(idle);
       if (timer !== undefined) globalThis.clearTimeout(timer);
     };
   }, [dispatch, pathname, router]);
