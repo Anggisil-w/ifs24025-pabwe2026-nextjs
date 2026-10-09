@@ -91,7 +91,7 @@ export default function DetailPage() {
     try { await fn(); await load(); } catch (e) { showErrorDialog((e as Error).message); }
   };
 
-  if (failedId === postId && (!post || post.id !== postId)) {
+  if (failedId === postId && post?.id !== postId) {
     return (
       <section className="card mx-auto max-w-3xl p-10 text-center">
         <h1 className="text-xl font-extrabold">Postingan tidak ditemukan</h1>
@@ -101,7 +101,7 @@ export default function DetailPage() {
     );
   }
 
-  if (!post || post.id !== postId) {
+  if (post?.id !== postId) {
     return (
       <>
         <h1 className="sr-only">Detail postingan</h1>

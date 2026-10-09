@@ -37,7 +37,7 @@ function ProfileForm({ me }: Readonly<{ me: User }>) {
       <div className="card flex items-center gap-5 p-6">
         <Avatar photo={me.photo} name={me.name} size={80} />
         <label className="btn btn-ghost cursor-pointer focus-within:ring-4 focus-within:ring-indigo-100">
-          Ganti foto
+          Ganti foto{" "}
           <input
             id="profile-photo-input"
             name="photo"

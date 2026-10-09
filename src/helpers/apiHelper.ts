@@ -1,15 +1,15 @@
 import { DELCOM_BASEURL, API_PROXY_PATH } from "@/lib/config";
 
-export const getAccessToken = () => (typeof window === "undefined" ? null : localStorage.getItem("token"));
+export const getAccessToken = () => (typeof globalThis.window === "undefined" ? null : localStorage.getItem("token"));
 export const putAccessToken = (t: string) => localStorage.setItem("token", t);
 export const removeAccessToken = () => localStorage.removeItem("token");
 
 type Opt = { method?: string; body?: unknown; query?: Record<string, string | number | undefined>; auth?: boolean };
 
 export async function api<T = unknown>(path: string, { method = "GET", body, query, auth = true }: Opt = {}): Promise<T> {
-  const isBrowser = typeof window !== "undefined";
+  const isBrowser = globalThis.window !== undefined;
   const base = isBrowser ? API_PROXY_PATH : DELCOM_BASEURL;
-  const url = new URL(base + path, isBrowser ? window.location.origin : undefined);
+  const url = new URL(base + path, isBrowser ? globalThis.location.origin : undefined);
   Object.entries(query || {}).forEach(([k, v]) => v !== undefined && url.searchParams.set(k, String(v)));
 
   const headers: Record<string, string> = {};
