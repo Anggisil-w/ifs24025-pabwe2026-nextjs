@@ -15,8 +15,8 @@ export default function ProfilePage() {
 
 function ProfileForm({ me }: Readonly<{ me: User }>) {
   const dispatch = useAppDispatch();
-  const [name, onName] = useInput(me?.name || "");
-  const [email, onEmail] = useInput(me?.email || "");
+  const [name, onName] = useInput(me.name);
+  const [email, onEmail] = useInput(me.email);
   const [pass, onPass, setPass] = useInput();
   const [npass, onNpass, setNpass] = useInput();
 

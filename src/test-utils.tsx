@@ -1,3 +1,4 @@
+import { vi } from "vitest";
 import type { ReactElement, ReactNode } from "react";
 import { render, type RenderOptions } from "@testing-library/react";
 import { Provider } from "react-redux";
@@ -16,3 +17,12 @@ export function renderWithProviders(ui: ReactElement, { preloadedState, store = 
   const Wrapper = ({ children }: { children: ReactNode }) => <Provider store={store}>{children}</Provider>;
   return { store, ...render(ui, { wrapper: Wrapper, ...options }) };
 }
+
+// Mock bersama untuk dialog SweetAlert: vi.mock("@/helpers/toolsHelper", async (orig) => (await import("@/test-utils")).toolsHelperMock(orig as never)).
+export const toolsHelperMock = async (orig: () => Promise<typeof import("@/helpers/toolsHelper")>) => ({
+  ...(await orig()),
+  showErrorDialog: vi.fn(),
+  showSuccessDialog: vi.fn().mockResolvedValue(undefined),
+  showWarningDialog: vi.fn(),
+  showConfirmDialog: vi.fn(),
+});

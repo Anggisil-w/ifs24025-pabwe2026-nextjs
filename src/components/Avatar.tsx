@@ -2,8 +2,8 @@ import Image from "next/image";
 import { assetUrl } from "@/helpers/avatarHelper";
 
 const initials = (name?: string | null) => {
-  const parts = (name || "").trim().split(/\s+/).filter(Boolean);
-  return ((parts[0]?.[0] ?? "U") + (parts.length > 1 ? (parts.at(-1)?.[0] ?? "") : "")).toUpperCase();
+  const letters = (name || "").trim().split(/\s+/).filter(Boolean).map((part) => part[0]);
+  return ((letters[0] ?? "U") + (letters.length > 1 ? letters.at(-1) : "")).toUpperCase();
 };
 
 type Props = { photo?: string | null; name?: string | null; size: number; className?: string };
