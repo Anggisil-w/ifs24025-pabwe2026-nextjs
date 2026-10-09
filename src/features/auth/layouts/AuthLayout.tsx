@@ -2,7 +2,7 @@
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { getAccessToken } from "@/helpers/apiHelper";
-export default function AuthLayout({ children }: { children: React.ReactNode }) {
+export default function AuthLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   const router = useRouter();
   useEffect(() => { if (getAccessToken()) router.replace("/"); }, [router]);
 return (
@@ -15,7 +15,7 @@ return (
         <span aria-hidden="true" className="grid size-11 place-items-center rounded-lg border-2 border-white bg-signal text-ink">
           <svg viewBox="0 0 24 24" className="h-6 w-6" fill="currentColor"><path d="M5 4h14a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-6l-5 4v-4H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2Z" /></svg>
         </span>
-        Postingan
+        <span>Postingan</span>
       </p>
       <div>
         <p className="text-6xl font-extrabold leading-[1.02] tracking-tight">Bagikan cerita,<br />temukan inspirasi.</p>

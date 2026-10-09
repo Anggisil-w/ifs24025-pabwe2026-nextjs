@@ -6,7 +6,7 @@ import Modal from "./Modal";
 import type { Post } from "@/types";
 import AddModal from "./AddModal";
 
-export default function ChangeCoverModal({ post, onClose, onDone }: { post: Post; onClose: () => void; onDone: () => void }) {
+export default function ChangeCoverModal({ post, onClose, onDone }: Readonly<{ post: Post; onClose: () => void; onDone: () => void }>) {
   const [file, setFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string>(post.cover || "");
   const [loading, setLoading] = useState(false);

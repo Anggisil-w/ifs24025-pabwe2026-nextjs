@@ -22,7 +22,7 @@ function LogoutIcon() {
   );
 }
 
-export default function NavbarComponent({ onMenu, onLogout }: { onMenu: () => void; onLogout: () => void }) {
+export default function NavbarComponent({ onMenu, onLogout }: Readonly<{ onMenu: () => void; onLogout: () => void }>) {
   const me = useAppSelector((s) => s.auth.profile);
 
   return (
@@ -39,7 +39,7 @@ export default function NavbarComponent({ onMenu, onLogout }: { onMenu: () => vo
           <span aria-hidden="true" className="grid size-9 place-items-center rounded-lg border-2 border-ink bg-signal" style={{ boxShadow: "2px 2px 0 var(--color-ink)" }}>
             <svg viewBox="0 0 24 24" className="h-5 w-5" fill="currentColor"><path d="M5 4h14a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-6l-5 4v-4H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2Z" /></svg>
           </span>
-          Postingan
+          <span>Postingan</span>
         </span>
       </div>
       <div className="flex items-center gap-3">

@@ -2,9 +2,9 @@
 import { useState } from "react";
 import { changePost } from "../api/postApi";
 import { showErrorDialog, showSuccessDialog } from "@/helpers/toolsHelper";
-export default function ChangeModal({ id, initial, onClose, onDone }: { id: string; initial: string; onClose: () => void; onDone: () => void }) {
+export default function ChangeModal({ id, initial, onClose, onDone }: Readonly<{ id: string; initial: string; onClose: () => void; onDone: () => void }>) {
   const [text, setText] = useState(initial);
-  const submit = async (e: React.FormEvent) => { e.preventDefault();
+  const submit = async (e: React.SyntheticEvent<HTMLFormElement>) => { e.preventDefault();
     try { await changePost(id, text); await showSuccessDialog("Postingan diperbarui"); onDone(); onClose(); } catch (err) { showErrorDialog((err as Error).message); } };
   return (
     <div className="fixed inset-0 z-50 grid place-items-center bg-black/40 p-4" onClick={onClose}>

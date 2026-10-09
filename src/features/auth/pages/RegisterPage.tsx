@@ -13,7 +13,7 @@ export default function RegisterPage() {
   const [password, onPass] = useInput();
   const [busy, setBusy] = useState(false);
 
-  const submit = async (e: React.FormEvent) => {
+  const submit = async (e: React.SyntheticEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (password.length < 6) return void showWarningDialog("Kata sandi minimal 6 karakter");
     setBusy(true);

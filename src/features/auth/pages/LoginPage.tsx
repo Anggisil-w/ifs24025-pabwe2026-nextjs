@@ -13,7 +13,7 @@ export default function LoginPage() {
   const [password, onPass] = useInput();
   const [busy, setBusy] = useState(false);
 
-  const submit = async (e: React.FormEvent) => {
+  const submit = async (e: React.SyntheticEvent<HTMLFormElement>) => {
     e.preventDefault();
     setBusy(true);
     try {

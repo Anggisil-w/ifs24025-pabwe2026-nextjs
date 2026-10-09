@@ -13,7 +13,7 @@ export default function ProfilePage() {
   return me ? <ProfileForm me={me} /> : null;
 }
 
-function ProfileForm({ me }: { me: User }) {
+function ProfileForm({ me }: Readonly<{ me: User }>) {
   const dispatch = useAppDispatch();
   const [name, onName] = useInput(me?.name || "");
   const [email, onEmail] = useInput(me?.email || "");

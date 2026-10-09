@@ -37,15 +37,21 @@ const UserIcon: SidebarIcon = ({ size = 18, ...props }) => (
 );
 
 const items = [{ href: "/", label: "Semua Postingan", icon: GlobeIcon }, { href: "/?me=1", label: "Postingan Saya", icon: FileTextIcon }, { href: "/users", label: "Daftar Pengguna", icon: UsersIcon }, { href: "/profile", label: "Profil Saya", icon: UserIcon }];
-export default function SidebarComponent({ open, onClose }: { open: boolean; onClose: () => void }) {
+function isActiveItem(href: string, path: string, isMe: boolean) {
+  if (href === "/") return path === "/" && !isMe;
+  if (href === "/?me=1") return path === "/" && isMe;
+  return path === href;
+}
+
+export default function SidebarComponent({ open, onClose }: Readonly<{ open: boolean; onClose: () => void }>) {
   const path = usePathname(); const isMe = useSearchParams().get("me") === "1";
   return (
     <>
-      {open && <div className="fixed inset-0 z-40 bg-ink/50 lg:hidden" onClick={onClose} />}
+      {open && <button type="button" tabIndex={-1} aria-label="Tutup menu" className="fixed inset-0 z-40 cursor-default bg-ink/50 lg:hidden" onClick={onClose} />}
       <aside className={`fixed inset-y-0 left-0 z-50 w-64 border-r-2 border-ink bg-white p-4 pt-20 transition-transform lg:z-20 lg:translate-x-0 ${open ? "translate-x-0" : "-translate-x-full"}`}>
         <nav className="space-y-2" aria-label="Menu utama">
           {items.map(({ href, label, icon: I }) => {
-            const active = href === "/" ? path === "/" && !isMe : href === "/?me=1" ? path === "/" && isMe : path === href;
+            const active = isActiveItem(href, path, isMe);
             return <Link key={href} href={href} onClick={onClose} aria-current={active ? "page" : undefined} className={`flex items-center gap-3 rounded-lg border-2 px-4 py-2.5 text-sm font-bold transition ${active ? "border-ink bg-signal text-ink shadow-[3px_3px_0_var(--color-ink)]" : "border-transparent text-slate-700 hover:border-ink hover:bg-slate-50"}`}><I size={18} />{label}</Link>;
           })}
         </nav>

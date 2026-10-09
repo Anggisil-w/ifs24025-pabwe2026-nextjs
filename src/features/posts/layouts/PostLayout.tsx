@@ -8,7 +8,7 @@ import { showConfirmDialog } from "@/helpers/toolsHelper";
 import NavbarComponent from "../components/NavbarComponent";
 import SidebarComponent from "../components/SidebarComponent";
 
-export default function PostLayout({ children }: { children: React.ReactNode }) {
+export default function PostLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   const router = useRouter();
   const pathname = usePathname();
   const dispatch = useAppDispatch();
@@ -32,12 +32,12 @@ export default function PostLayout({ children }: { children: React.ReactNode }) 
     }
 
     const load = () => dispatch(asyncLoadProfile());
-    const idle = window.requestIdleCallback?.(load, { timeout: 2000 });
-    const timer = idle === undefined ? window.setTimeout(load, 1200) : undefined;
+    const idle = globalThis.requestIdleCallback?.(load, { timeout: 2000 });
+    const timer = idle === undefined ? globalThis.setTimeout(load, 1200) : undefined;
 
     return () => {
-      if (idle !== undefined) window.cancelIdleCallback?.(idle);
-      if (timer !== undefined) window.clearTimeout(timer);
+      if (idle !== undefined) globalThis.cancelIdleCallback?.(idle);
+      if (timer !== undefined) globalThis.clearTimeout(timer);
     };
   }, [dispatch, pathname, router]);
 

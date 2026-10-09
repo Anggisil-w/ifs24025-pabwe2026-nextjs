@@ -3,10 +3,10 @@ import { useState } from "react";
 import { addPost } from "../api/postApi";
 import { showErrorDialog, showSuccessDialog } from "@/helpers/toolsHelper";
 
-export default function AddModal({ onClose, onDone }: { onClose: () => void; onDone: () => void }) {
+export default function AddModal({ onClose, onDone }: Readonly<{ onClose: () => void; onDone: () => void }>) {
   const [text, setText] = useState("");
   const [busy, setBusy] = useState(false);
-  const submit = async (e: React.FormEvent) => {
+  const submit = async (e: React.SyntheticEvent<HTMLFormElement>) => {
     e.preventDefault();
     setBusy(true);
     try { await addPost(text); await showSuccessDialog("Postingan dipublikasikan"); onDone(); onClose(); }
