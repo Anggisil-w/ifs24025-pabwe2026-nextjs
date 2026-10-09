@@ -16,6 +16,12 @@ const submit = () => {
 describe("AddModal", () => {
   beforeEach(() => vi.clearAllMocks());
 
+  it("menggunakan elemen <dialog> berisi form", () => {
+    render(<AddModal onClose={vi.fn()} onDone={vi.fn()} />);
+    const dialog = screen.getByRole("dialog", { name: "Postingan" });
+    expect(dialog.tagName).toBe("DIALOG");
+    expect(dialog.querySelector("form")).not.toBeNull();
+  });
   it("mempublikasikan postingan lalu menutup modal", async () => {
     vi.mocked(addPost).mockResolvedValue(undefined);
     const onClose = vi.fn(); const onDone = vi.fn();

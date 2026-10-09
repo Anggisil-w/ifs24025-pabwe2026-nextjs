@@ -11,6 +11,12 @@ import ChangeModal from "./ChangeModal";
 describe("ChangeModal", () => {
   beforeEach(() => vi.clearAllMocks());
 
+  it("menggunakan elemen <dialog> berisi form", () => {
+    render(<ChangeModal id="p1" initial="lama" onClose={vi.fn()} onDone={vi.fn()} />);
+    const dialog = screen.getByRole("dialog", { name: "Postingan" });
+    expect(dialog.tagName).toBe("DIALOG");
+    expect(dialog.querySelector("form")).not.toBeNull();
+  });
   it("menyimpan perubahan lalu menutup modal", async () => {
     vi.mocked(changePost).mockResolvedValue(undefined);
     const onClose = vi.fn(); const onDone = vi.fn();

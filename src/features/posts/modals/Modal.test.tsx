@@ -5,7 +5,10 @@ import Modal from "./Modal";
 describe("Modal", () => {
   it("menampilkan judul dan isi sebagai dialog", () => {
     render(<Modal title="Judul" onClose={vi.fn()}><p>isi</p></Modal>);
-    expect(screen.getByRole("dialog", { name: "Judul" })).toBeInTheDocument();
+    const dialog = screen.getByRole("dialog", { name: "Judul" });
+    expect(dialog).toBeInTheDocument();
+    expect(dialog.tagName).toBe("DIALOG");
+    expect(dialog).toHaveAttribute("open");
     expect(screen.getByText("isi")).toBeInTheDocument();
   });
   it("menutup saat backdrop diklik", () => {
