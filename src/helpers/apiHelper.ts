@@ -1,6 +1,6 @@
 import { DELCOM_BASEURL, API_PROXY_PATH } from "@/lib/config";
 
-export const getAccessToken = () => (typeof globalThis.window === "undefined" ? null : localStorage.getItem("token"));
+export const getAccessToken = () => (globalThis.window === undefined ? null : localStorage.getItem("token"));
 export const putAccessToken = (t: string) => localStorage.setItem("token", t);
 export const removeAccessToken = () => localStorage.removeItem("token");
 
