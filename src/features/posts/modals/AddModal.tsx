@@ -13,8 +13,9 @@ export default function AddModal({ onClose, onDone }: Readonly<{ onClose: () => 
     catch (err) { showErrorDialog((err as Error).message); setBusy(false); }
   };
   return (
-    <div className="fixed inset-0 z-50 grid place-items-center bg-black/40 p-4" onClick={onClose}>
-      <form onClick={(e) => e.stopPropagation()} onSubmit={submit} className="card w-full max-w-lg space-y-4 p-6">
+    <div className="fixed inset-0 z-50 grid place-items-center p-4">
+      <button type="button" tabIndex={-1} aria-label="Tutup" className="absolute inset-0 cursor-default bg-black/40" onClick={onClose} />
+      <form role="dialog" aria-modal="true" aria-label="Postingan" onSubmit={submit} className="card relative w-full max-w-lg space-y-4 p-6">
         <h2 className="text-lg font-extrabold">Postingan baru</h2>
         <textarea className="input min-h-32" placeholder="Apa yang kamu pikirkan?" value={text} onChange={(e) => setText(e.target.value)} required />
         <div className="flex justify-end gap-2">
