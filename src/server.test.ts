@@ -9,7 +9,7 @@ const m = vi.hoisted(() => ({
 }));
 
 vi.mock("next", () => ({ default: m.next }));
-vi.mock("node:http", () => ({ createServer: m.createServer }));
+vi.mock("node:http", () => ({ default: { createServer: m.createServer }, createServer: m.createServer }));
 
 describe("server", () => {
   beforeEach(() => {
